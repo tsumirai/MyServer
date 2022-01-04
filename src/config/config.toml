@@ -1,0 +1,20 @@
+app_name = "my server"
+
+
+[log]
+log_file_path = ".\\log\\"
+log_file_name = "server.log"
+
+# 日志等级
+log_level = "DEBUG"
+
+[mysql]
+ip = "127.0.0.1"
+port = "3306"
+user = "dj"
+password = 123456
+database = "server"
+
+[redis]
+ip = "127.0.0.1"
+port = 7381

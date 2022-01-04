@@ -1,0 +1,7 @@
+time="2022-01-03 14:31:32" level=info msg="Init Log Success" func=MyServer/src/middleware.InitLogger file=logger.go
+time="2022-01-03 14:31:40" level=info func=MyServer/src/middleware.LoggerToFile.func1 file=logger.go client_ip="::1" latency_time="169.3µs" req_method=GET req_uri=/ status_code=200
+time="2022-01-03 14:32:16" level=info msg="Init Log Success" func=MyServer/src/middleware.InitLogger file=logger.go
+time="2022-01-03 14:32:36" level=info msg="Init Log Success" func=MyServer/src/middleware.InitLogger file=logger.go
+time="2022-01-03 14:32:36" level=info msg="Server Start: %v %v[X-Forwarded-For X-Real-IP]" func=main.main file=main.go
+time="2022-01-03 14:32:58" level=info msg="Init Log Success" func=MyServer/src/middleware.InitLogger file=logger.go
+time="2022-01-03 14:32:58" level=info msg="Server Start: [X-Forwarded-For X-Real-IP]" func=main.main file=main.go
