@@ -21,6 +21,7 @@ func PathExists(path string) (bool, error) {
 		return true, nil
 	}
 	if os.IsNotExist(err) {
+		fmt.Println("PathExists: not exist")
 		return false, nil
 	}
 	return false, err
@@ -40,7 +41,11 @@ func InitLogger() {
 		if err != nil {
 			fmt.Println("InitLogger Failed: mkdir failed! ", err.Error())
 			panic(err)
+		}else{
+			fmt.Println("InitLogger mkdir success!")
 		}
+	}else{
+		fmt.Println("InitLogger path exist!")
 	}
 
 	fileName := path.Join(logFilePath, logFileName)
