@@ -2,6 +2,7 @@ package main
 
 import (
 	"MyServer/src/config"
+	"MyServer/src/database"
 	"MyServer/src/middleware"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -10,6 +11,8 @@ import (
 func init() {
 	config.InitConfig()
 	middleware.InitLogger()
+	database.InitMysql()
+	database.InitRedis()
 }
 
 func main() {

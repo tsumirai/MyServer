@@ -11,10 +11,13 @@ log_level = "DEBUG"
 [mysql]
 ip = "127.0.0.1"
 port = "3306"
-user = "dj"
-password = 123456
-database = "server"
+user = "webserver"
+password = "1992zhou1319"
+database = "webserver"
 
 [redis]
 ip = "127.0.0.1"
-port = 7381
+port = 6390
+password = ""
+db = 0
+poolsize = 100
