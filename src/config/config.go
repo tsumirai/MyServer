@@ -11,7 +11,7 @@ func InitConfig() {
 	Config = viper.New()
 	Config.SetConfigName("config")
 	Config.SetConfigType("toml")
-	Config.AddConfigPath(".\\src\\config\\")
+	Config.AddConfigPath("config/")
 	Config.SetDefault("redis.port", 6381)
 	err := Config.ReadInConfig()
 	if err != nil {

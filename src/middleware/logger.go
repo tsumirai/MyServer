@@ -20,16 +20,16 @@ func InitLogger() {
 
 	fileName := path.Join(logFilePath, logFileName)
 
-	logContent,err := rotatelogs.New(
+	logContent, err := rotatelogs.New(
 		fileName+"-%Y-%m-%d-%H",
 		rotatelogs.WithLinkName(fileName),
 		// MaxAge and RotationCount cannot be both set 两者不能同时设置
 		//rotatelogs.WithMaxAge(5*time.Minute),
-		rotatelogs.WithRotationCount(5),  // number 默认7份，大于7份或者到了清理时间，开始清理
+		rotatelogs.WithRotationCount(5),        // number 默认7份，大于7份或者到了清理时间，开始清理
 		rotatelogs.WithRotationTime(time.Hour), // rotate最小为1分钟轮询。默认60s，低于1分钟按照1分钟来
-		)
+	)
 	if err != nil {
-		fmt.Println("InitLogger Failed: ",err.Error())
+		fmt.Println("InitLogger Failed: ", err.Error())
 		panic(err)
 	}
 
@@ -58,7 +58,7 @@ func InitLogger() {
 		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
 			// 处理文件名
 			fileShortName := path.Base(frame.File)
-			return frame.Function+" : "+strconv.Itoa(frame.Line), fileShortName
+			return frame.Function + " : " + strconv.Itoa(frame.Line), fileShortName
 		},
 	})
 	log.Info("Init Log Success")
