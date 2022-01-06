@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
+	"os"
 	"path"
 	"runtime"
 	"strconv"
@@ -14,9 +15,33 @@ import (
 
 var log = logrus.New()
 
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
 func InitLogger() {
 	logFilePath := config.Config.GetString("log.log_file_path")
 	logFileName := config.Config.GetString("log.log_file_name")
+
+	exist, err := PathExists(logFilePath)
+	if err != nil {
+		fmt.Println("InitLogger Failed: ", err.Error())
+		panic(err)
+	}
+	if !exist {
+		err = os.Mkdir(logFilePath, os.ModePerm)
+		if err != nil {
+			fmt.Println("InitLogger Failed: mkdir failed! ", err.Error())
+			panic(err)
+		}
+	}
 
 	fileName := path.Join(logFilePath, logFileName)
 
