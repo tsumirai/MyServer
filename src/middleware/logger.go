@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"time"
@@ -31,7 +32,7 @@ func getCurrentPathByCaller() string {
 	var execPath string
 	_, filename, _, ok := runtime.Caller(0)
 	if ok {
-		execPath = path.Dir(filename)
+		execPath = filepath.Dir(filename)
 	}
 	return execPath
 }
