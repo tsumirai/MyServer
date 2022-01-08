@@ -27,8 +27,17 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
+func getCurrentPathByCaller() string {
+	var execPath string
+	_, filename, _, ok := runtime.Caller(0)
+	if ok {
+		execPath = path.Dir(filename)
+	}
+	return execPath
+}
+
 func InitLogger() {
-	logFilePath := config.Config.GetString("log.log_file_path")
+	logFilePath := getCurrentPathByCaller() + config.Config.GetString("log.log_file_path")
 	logFileName := config.Config.GetString("log.log_file_name")
 
 	exist, err := PathExists(logFilePath)
@@ -36,15 +45,16 @@ func InitLogger() {
 		fmt.Println("InitLogger Failed: ", err.Error())
 		panic(err)
 	}
+
 	if !exist {
 		err = os.Mkdir(logFilePath, os.ModePerm)
 		if err != nil {
 			fmt.Println("InitLogger Failed: mkdir failed! ", err.Error())
 			panic(err)
-		}else{
+		} else {
 			fmt.Println("InitLogger mkdir success!")
 		}
-	}else{
+	} else {
 		fmt.Println("InitLogger path exist!")
 	}
 
