@@ -2,7 +2,7 @@ app_name = "my server"
 
 
 [log]
-log_file_path = "\\..\\log\\"
+log_file_path = "/../log/"
 log_file_name = "server.log"
 
 # 日志等级
