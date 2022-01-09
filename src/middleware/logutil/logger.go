@@ -1,4 +1,4 @@
-package middleware
+package logutil
 
 import (
 	"MyServer/src/config"
@@ -157,4 +157,99 @@ func LoggerToES() gin.HandlerFunc {
 // TODO 日志记录到MQ
 func LoggerToMQ() gin.HandlerFunc {
 	return func(c *gin.Context) {}
+}
+
+func Infof(format string, args ...interface{}) {
+	log.Infof(format, args)
+}
+
+func Warnf(format string, args ...interface{}) {
+	log.Warnf(format, args)
+}
+func Debugf(format string, args ...interface{}) {
+	log.Debugf(format, args)
+}
+func Errorf(format string, args ...interface{}) {
+	log.Errorf(format, args)
+}
+func Tracef(format string, args ...interface{}) {
+	log.Tracef(format, args)
+}
+
+func Panicf(format string, args ...interface{}) {
+	log.Panicf(format, args)
+}
+
+func Printf(format string, args ...interface{}) {
+	log.Printf(format, args)
+}
+
+func Fatalf(format string, args ...interface{}) {
+	log.Fatalf(format, args)
+}
+
+func Trace(args ...interface{}) {
+	log.Log(logrus.TraceLevel, args...)
+}
+
+func Debug(args ...interface{}) {
+	log.Log(logrus.DebugLevel, args...)
+}
+
+func Info(args ...interface{}) {
+	log.Log(logrus.InfoLevel, args...)
+}
+
+func Warn(args ...interface{}) {
+	log.Log(logrus.WarnLevel, args...)
+}
+
+func Warning(args ...interface{}) {
+	log.Warn(args...)
+}
+
+func Error(args ...interface{}) {
+	log.Log(logrus.ErrorLevel, args...)
+}
+
+func Fatal(args ...interface{}) {
+	log.Log(logrus.FatalLevel, args...)
+	log.Exit(1)
+}
+
+func Panic(args ...interface{}) {
+	log.Log(logrus.PanicLevel, args...)
+}
+
+func Traceln(args ...interface{}) {
+	log.Logln(logrus.TraceLevel, args...)
+}
+
+func Debugln(args ...interface{}) {
+	log.Logln(logrus.DebugLevel, args...)
+}
+
+func Infoln(args ...interface{}) {
+	log.Logln(logrus.InfoLevel, args...)
+}
+
+func Warnln(args ...interface{}) {
+	log.Logln(logrus.WarnLevel, args...)
+}
+
+func Warningln(args ...interface{}) {
+	log.Warnln(args...)
+}
+
+func Errorln(args ...interface{}) {
+	log.Logln(logrus.ErrorLevel, args...)
+}
+
+func Fatalln(args ...interface{}) {
+	log.Logln(logrus.FatalLevel, args...)
+	log.Exit(1)
+}
+
+func Panicln(args ...interface{}) {
+	log.Logln(logrus.PanicLevel, args...)
 }

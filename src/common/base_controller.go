@@ -32,7 +32,7 @@ func (c *BaseController) EchoErrorStruct(ctx *gin.Context, errorStruct *BaseErro
 
 func (c *BaseController) EchoSuccess(ctx *gin.Context, data interface{}) {
 	result := EchoResult{
-		ErrNo:  http.StatusOK,
+		ErrNo:  0,
 		ErrMsg: "",
 		Data:   data,
 	}
