@@ -22,5 +22,5 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 	}
 
 	fmt.Println(userData.Name, userData.NickName, userData.City, userData.Sex, userData.Birthday)
-	u.EchoSuccess(ctx)
+	u.EchoSuccess(ctx, "")
 }
