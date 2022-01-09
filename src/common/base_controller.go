@@ -2,10 +2,8 @@ package common
 
 import (
 	"MyServer/src/database"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -29,12 +27,7 @@ func (c *BaseController) EchoErrorStruct(ctx *gin.Context, errorStruct *BaseErro
 		Data:   "",
 	}
 
-	echoJson, err := json.Marshal(result)
-	if err != nil {
-		log.Errorf("EchoErrorStruct Marshal Json Failed: %v", err.Error())
-		echoJson = make([]byte, 0)
-	}
-	ctx.JSON(errorStruct.ErrNo, echoJson)
+	ctx.JSON(errorStruct.ErrNo, result)
 }
 
 func (c *BaseController) EchoSuccess(ctx *gin.Context, data interface{}) {
@@ -43,10 +36,6 @@ func (c *BaseController) EchoSuccess(ctx *gin.Context, data interface{}) {
 		ErrMsg: "",
 		Data:   data,
 	}
-	echoJson, err := json.Marshal(result)
-	if err != nil {
-		log.Errorf("EchoErrorStruct Marshal Json Failed: %v", err.Error())
-		echoJson = make([]byte, 0)
-	}
-	ctx.JSON(http.StatusOK, echoJson)
+
+	ctx.JSON(http.StatusOK, result)
 }
