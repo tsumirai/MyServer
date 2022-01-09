@@ -15,9 +15,9 @@ func (c *BaseController) GetDB() *gorm.DB {
 }
 
 func (c *BaseController) EchoErrorStruct(ctx *gin.Context, errorStruct *BaseError) {
-	ctx.String(errorStruct.ErrNo, errorStruct.ErrMsg)
+	ctx.JSON(errorStruct.ErrNo, errorStruct.ErrMsg)
 }
 
 func (c *BaseController) EchoSuccess(ctx *gin.Context) {
-	ctx.String(http.StatusOK, "")
+	ctx.JSON(http.StatusOK, "")
 }
