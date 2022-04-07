@@ -16,7 +16,7 @@ type contextHook struct {
 
 func NewContextHook(levels ...logrus.Level) logrus.Hook {
 	hook := contextHook{
-		Field:  "line",
+		Field:  "file",
 		Skip:   5,
 		levels: levels,
 	}
@@ -42,10 +42,6 @@ func findCaller(skip int) string {
 	line := 0
 	for i := 0; i < 20; i++ {
 		file, line = getCaller(skip + i)
-		fmt.Println(file)
-		fmt.Println(strings.HasPrefix(file, "logrus"))
-		fmt.Println(strings.HasPrefix(file, "logutil"))
-		fmt.Println(strings.HasPrefix(file, "gin"))
 		if !strings.HasPrefix(file, "logrus") && !strings.HasPrefix(file, "logutil") && !strings.HasPrefix(file, "gin") {
 			break
 		}

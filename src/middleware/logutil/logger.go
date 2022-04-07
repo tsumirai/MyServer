@@ -7,7 +7,6 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -84,6 +83,7 @@ func InitLogger() {
 	//logger := logrus.New()
 	// 设置输出
 	log.SetOutput(logContent)
+
 	// 设置日志级别
 	logLevel, err := logrus.ParseLevel(config.Config.GetString("log.log_level"))
 	if err != nil {
@@ -99,11 +99,11 @@ func InitLogger() {
 	log.SetFormatter(&logrus.JSONFormatter{
 		//ForceColors:     true,
 		TimestampFormat: "2006-01-02 15:04:05",
-		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
-			// 处理文件名
-			fileShortName := path.Base(frame.File)
-			return frame.Function + " : " + strconv.Itoa(frame.Line), fileShortName
-		},
+		//CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
+		//	// 处理文件名
+		//	fileShortName := path.Base(frame.File)
+		//	return frame.Function + " : " + strconv.Itoa(frame.Line), fileShortName
+		//},
 	})
 	log.Info("Init Log Success")
 }
