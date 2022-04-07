@@ -40,9 +40,12 @@ func (hook contextHook) Fire(entry *logrus.Entry) error {
 func findCaller(skip int) string {
 	file := ""
 	line := 0
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 20; i++ {
 		file, line = getCaller(skip + i)
 		fmt.Println(file)
+		fmt.Println(strings.HasPrefix(file, "logrus"))
+		fmt.Println(strings.HasPrefix(file, "logutil"))
+		fmt.Println(strings.HasPrefix(file, "gin"))
 		if !strings.HasPrefix(file, "logrus") && !strings.HasPrefix(file, "logutil") && !strings.HasPrefix(file, "gin") {
 			break
 		}
