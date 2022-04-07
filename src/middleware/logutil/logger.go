@@ -3,15 +3,16 @@ package logutil
 import (
 	"MyServer/src/config"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/sirupsen/logrus"
 	"os"
 	"path"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/sirupsen/logrus"
 )
 
 var log = logrus.New()
@@ -90,8 +91,10 @@ func InitLogger() {
 		panic(err)
 	}
 	log.SetLevel(logLevel)
+
 	// 设置行号和文件名
 	log.SetReportCaller(true)
+
 	// 设置日志格式
 	log.SetFormatter(&logrus.JSONFormatter{
 		//ForceColors:     true,
@@ -125,6 +128,7 @@ func LoggerToFile() gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 
+		log.Hooks.Add(NewContextHook())
 		log.WithFields(logrus.Fields{
 			"status_code":  statusCode,
 			"latency_time": latencyTime,
