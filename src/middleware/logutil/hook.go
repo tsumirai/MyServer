@@ -17,7 +17,7 @@ type contextHook struct {
 func NewContextHook(levels ...logrus.Level) logrus.Hook {
 	hook := contextHook{
 		Field:  "line",
-		Skip:   0,
+		Skip:   5,
 		levels: levels,
 	}
 
