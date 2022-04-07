@@ -93,7 +93,7 @@ func InitLogger() {
 	log.SetLevel(logLevel)
 
 	// 设置行号和文件名
-	log.SetReportCaller(true)
+	//log.SetReportCaller(true)
 
 	// 设置日志格式
 	log.SetFormatter(&logrus.JSONFormatter{
