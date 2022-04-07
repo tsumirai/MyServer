@@ -1,4 +1,0 @@
-{"file":"logger.go","func":"MyServer/src/middleware/logutil.InitLogger : 105","level":"info","msg":"Init Log Success","time":"2022-04-07 16:09:18"}
-{"file":"logger.go","func":"MyServer/src/middleware/logutil.Error : 212","level":"error","msg":"InitMysql failed: dial tcp 127.0.0.1:3306: connect: connection refused","time":"2022-04-07 16:09:18"}
-{"file":"logger.go","func":"MyServer/src/middleware/logutil.InitLogger : 108","level":"info","msg":"Init Log Success","time":"2022-04-07 16:48:38"}
-{"file":"logger.go","func":"MyServer/src/middleware/logutil.Error : 216","level":"error","msg":"InitMysql failed: dial tcp 127.0.0.1:3306: connect: connection refused","time":"2022-04-07 16:48:38"}

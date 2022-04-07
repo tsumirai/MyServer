@@ -13,7 +13,7 @@ func InitRedis() {
 		Addr:     config.Config.GetString("redis.ip") + ":" + config.Config.GetString("redis.port"),
 		Password: config.Config.GetString("redis.password"),
 		DB:       config.Config.GetInt("redis.db"),
-		PoolSize: config.Config.GetInt("redis.poolsize"),
+		PoolSize: config.Config.GetInt("redis.pool_size"),
 	})
 
 	_, err := RDB.Ping().Result()
