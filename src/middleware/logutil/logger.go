@@ -90,7 +90,8 @@ func InitLogger() {
 		fmt.Println("LoggerToFile Parse logLevel failed: ", err.Error())
 		panic(err)
 	}
-	log.SetLevel(logLevel)
+	//log.SetLevel(logLevel)
+	log.Hooks.Add(NewContextHook(logLevel))
 
 	// 设置行号和文件名
 	//log.SetReportCaller(true)
@@ -128,7 +129,8 @@ func LoggerToFile() gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 
-		log.Hooks.Add(NewContextHook())
+		//log.Hooks.Add(NewContextHook())
+
 		log.WithFields(logrus.Fields{
 			"status_code":  statusCode,
 			"latency_time": latencyTime,
