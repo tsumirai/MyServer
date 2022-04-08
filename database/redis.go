@@ -3,6 +3,7 @@ package database
 import (
 	config "MyServer/conf"
 	"MyServer/middleware/logger"
+	"context"
 
 	"github.com/go-redis/redis"
 )
@@ -19,9 +20,9 @@ func InitRedis() {
 
 	_, err := RDB.Ping().Result()
 	if err != nil {
-		logger.Error(logger.LogArgs{"msg": "InitRedis failed", "err": err.Error()})
+		logger.Error(context.TODO(), logger.LogArgs{"msg": "InitRedis failed", "err": err.Error()})
 		panic(err)
 	}
 
-	logger.Info(logger.LogArgs{"msg": "InitRedis Success!"})
+	logger.Info(context.TODO(), logger.LogArgs{"msg": "InitRedis Success!"})
 }

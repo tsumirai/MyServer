@@ -3,6 +3,7 @@ package logger
 import (
 	config "MyServer/conf"
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -203,6 +204,13 @@ func (a LogArgs) String() string {
 	return b.String()
 }
 
+func (a LogArgs) addTraceID(ctx context.Context) {
+	traceID := ctx.Value("trace_id")
+	if traceID != nil {
+		a["trace_id"] = traceID
+	}
+}
+
 // todo 日志记录到 MongoDB
 func (l *LogModel) LoggerToMongoDB() gin.HandlerFunc {
 	return func(c *gin.Context) {}
@@ -218,97 +226,121 @@ func (l *LogModel) LoggerToMQ() gin.HandlerFunc {
 	return func(c *gin.Context) {}
 }
 
-func Infof(format string, args LogArgs) {
+func Infof(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Infof(format, args.String())
 }
 
-func Warnf(format string, args LogArgs) {
+func Warnf(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Warnf(format, args.String())
 }
-func Debugf(format string, args LogArgs) {
+func Debugf(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Debugf(format, args.String())
 }
-func Errorf(format string, args LogArgs) {
+func Errorf(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Errorf(format, args.String())
 }
-func Tracef(format string, args LogArgs) {
+func Tracef(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Tracef(format, args.String())
 }
 
-func Panicf(format string, args LogArgs) {
+func Panicf(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Panicf(format, args.String())
 }
 
-func Printf(format string, args LogArgs) {
+func Printf(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Printf(format, args.String())
 }
 
-func Fatalf(format string, args LogArgs) {
+func Fatalf(ctx context.Context, format string, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Fatalf(format, args.String())
 }
 
-func Trace(args LogArgs) {
+func Trace(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Log(logrus.TraceLevel, args.String())
 }
 
-func Debug(args LogArgs) {
+func Debug(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Log(logrus.DebugLevel, args.String())
 }
 
-func Info(args LogArgs) {
+func Info(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Log(logrus.InfoLevel, args.String())
 }
 
-func Warn(args LogArgs) {
+func Warn(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Log(logrus.WarnLevel, args.String())
 }
 
-func Warning(args LogArgs) {
+func Warning(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Warn(args.String())
 }
 
-func Error(args LogArgs) {
+func Error(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Log(logrus.ErrorLevel, args.String())
 }
 
-func Fatal(args LogArgs) {
+func Fatal(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Log(logrus.FatalLevel, args.String())
 	log.Exit(1)
 }
 
-func Panic(args LogArgs) {
+func Panic(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Log(logrus.PanicLevel, args.String())
 }
 
-func Traceln(args LogArgs) {
+func Traceln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Logln(logrus.TraceLevel, args.String())
 }
 
-func Debugln(args LogArgs) {
+func Debugln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Logln(logrus.DebugLevel, args.String())
 }
 
-func Infoln(args LogArgs) {
+func Infoln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Logln(logrus.InfoLevel, args.String())
 }
 
-func Warnln(args LogArgs) {
+func Warnln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Logln(logrus.WarnLevel, args.String())
 }
 
-func Warningln(args LogArgs) {
+func Warningln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Warnln(args.String())
 }
 
-func Errorln(args LogArgs) {
+func Errorln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Logln(logrus.ErrorLevel, args.String())
 }
 
-func Fatalln(args LogArgs) {
+func Fatalln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Logln(logrus.FatalLevel, args.String())
 	log.Exit(1)
 }
 
-func Panicln(args LogArgs) {
+func Panicln(ctx context.Context, args LogArgs) {
+	args.addTraceID(ctx)
 	log.Logln(logrus.PanicLevel, args.String())
 }

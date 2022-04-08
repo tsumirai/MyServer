@@ -20,12 +20,12 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 	var userData model.User
 	err := ctx.BindJSON(&userData)
 	if err != nil {
-		logger.Error(logger.LogArgs{"msg": "RegisterUser Failed", "err": err.Error()})
+		logger.Error(ctx, logger.LogArgs{"msg": "RegisterUser Failed", "err": err.Error()})
 		u.EchoErrorStruct(ctx, common.ErrJSONUnmarshallFailed)
 		return
 	}
 
-	logger.Info(logger.LogArgs{"name": userData.Name, "nickName": userData.NickName, "city": userData.City, "sex": userData.Sex, "birthDay": userData.Birthday})
+	logger.Info(ctx, logger.LogArgs{"name": userData.Name, "nickName": userData.NickName, "city": userData.City, "sex": userData.Sex, "birthDay": userData.Birthday})
 
 	u.EchoSuccess(ctx, "")
 }

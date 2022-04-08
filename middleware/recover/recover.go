@@ -13,7 +13,7 @@ func Recover() gin.HandlerFunc {
 		defer func() {
 			if r := recover(); r != nil {
 				http.Error(c.Writer, "500 Server internal error", http.StatusInternalServerError)
-				logger.Error(logger.LogArgs{"msg": "程序panic", "err": r, "stack": string(debug.Stack())})
+				logger.Error(c, logger.LogArgs{"msg": "程序panic", "err": r, "stack": string(debug.Stack())})
 			}
 		}()
 		c.Next()
