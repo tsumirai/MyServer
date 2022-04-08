@@ -187,15 +187,21 @@ func (l *LogModel) LoggerToFile() gin.HandlerFunc {
 type LogArgs map[string]interface{}
 
 func (a LogArgs) String() string {
-
 	b := bytes.Buffer{}
 	keys := make([]string, 0, len(a))
 	for k := range a {
-		keys = append(keys, k)
+		if k != "trace_id" {
+			keys = append(keys, k)
+		}
 	}
 	sort.Strings(keys)
-	for i, k := range keys {
-		if i < len(keys)-1 {
+	newKeys := make([]string, 0, len(a))
+	if _, exit := a["trace_id"]; exit {
+		newKeys = append(newKeys, "trace_id")
+	}
+	newKeys = append(newKeys, keys...)
+	for i, k := range newKeys {
+		if i < len(newKeys)-1 {
 			b.WriteString(fmt.Sprintf("%+v=%+v||", k, a[k]))
 		} else {
 			b.WriteString(fmt.Sprintf("%+v=%+v", k, a[k]))
