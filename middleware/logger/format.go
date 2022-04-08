@@ -20,6 +20,13 @@ func (l *LogFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	}
 
 	extMsg := ""
+	itraceID, exit := entry.Data["trace_id"]
+	if exit && itraceID != nil {
+		if extMsg != "" {
+			extMsg += "||"
+		}
+		extMsg += fmt.Sprintf("%s", itraceID)
+	}
 
 	reqMethod, exit := entry.Data["req_method"]
 	if exit && reqMethod != nil {
