@@ -1,5 +1,7 @@
 app_name = "my server"
 
+[server]
+port = 5455
 
 [log]
 log_file_path = "/../../log/"

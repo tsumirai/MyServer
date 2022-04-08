@@ -5,6 +5,7 @@ import (
 	"MyServer/database"
 	"MyServer/middleware/logger"
 	"MyServer/middleware/recover"
+	"MyServer/router"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -23,10 +24,15 @@ func main() {
 	// 调用中间件
 	R.Use(logger.NewLogModel().LoggerToFile(), recover.Recover())
 
-	InitRouter(R)
+	router.InitRouter(R)
 
 	logger.Info(logger.LogArgs{"msg": "Server Start!!"})
-	err := R.Run(":5455")
+
+	port := config.Config.GetString("server.port")
+	if port == "" {
+		port = "8991"
+	}
+	err := R.Run(":" + port)
 	if err != nil {
 		logger.Fatal(logger.LogArgs{"msg": "启动服务失败", "err": err.Error()})
 		os.Exit(1)
