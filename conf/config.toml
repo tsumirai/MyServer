@@ -2,8 +2,9 @@ app_name = "my server"
 
 
 [log]
-log_file_path = "/../../../log/"
+log_file_path = "/../../log/"
 log_file_name = "server.log"
+err_log_file_name = "server.log.wf"
 
 # 日志等级
 log_level = "DEBUG"

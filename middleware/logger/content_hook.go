@@ -1,24 +1,27 @@
-package logutil
+package logger
 
 import (
 	"fmt"
 	"runtime"
 	"strings"
 
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 )
 
-type contextHook struct {
+type contentHook struct {
 	Field  string
 	Skip   int
 	levels []logrus.Level
+	output *rotatelogs.RotateLogs
 }
 
-func NewContextHook(levels ...logrus.Level) logrus.Hook {
-	hook := contextHook{
+func NewContentHook(output *rotatelogs.RotateLogs, levels ...logrus.Level) logrus.Hook {
+	hook := contentHook{
 		Field:  "file",
 		Skip:   5,
 		levels: levels,
+		output: output,
 	}
 
 	if len(hook.levels) == 0 {
@@ -28,12 +31,17 @@ func NewContextHook(levels ...logrus.Level) logrus.Hook {
 	return &hook
 }
 
-func (hook contextHook) Levels() []logrus.Level {
-	return logrus.AllLevels
+func (hook contentHook) Levels() []logrus.Level {
+	return hook.levels
 }
 
-func (hook contextHook) Fire(entry *logrus.Entry) error {
+func (hook contentHook) Fire(entry *logrus.Entry) error {
 	entry.Data[hook.Field] = findCaller(hook.Skip)
+	content, err := entry.Bytes()
+	if err != nil {
+		panic(err)
+	}
+	hook.output.Write(content)
 	return nil
 }
 

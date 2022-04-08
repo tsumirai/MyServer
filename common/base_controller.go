@@ -1,7 +1,7 @@
 package common
 
 import (
-	"MyServer/src/database"
+	"MyServer/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
