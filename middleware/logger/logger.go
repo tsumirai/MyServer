@@ -158,8 +158,8 @@ func (l *LogModel) LoggerToFile() gin.HandlerFunc {
 		statusCode := c.Writer.Status()
 		// 请求IP
 		clientIP := c.ClientIP()
-		// ticket
-		ticket := c.Value("ticket")
+		// trace_id
+		traceID := c.Value("trace_id")
 
 		//log.Hooks.Add(NewContextHook())
 
@@ -169,7 +169,7 @@ func (l *LogModel) LoggerToFile() gin.HandlerFunc {
 			"client_ip":    clientIP,
 			"req_method":   reqMethod,
 			"req_uri":      reqURI,
-			"ticket":       ticket,
+			"trace_id":     traceID,
 		}).Info()
 
 		//日志格式

@@ -3,6 +3,7 @@ package main
 import (
 	config "MyServer/conf"
 	"MyServer/database"
+	"MyServer/middleware/context"
 	"MyServer/middleware/logger"
 	"MyServer/middleware/recover"
 	"MyServer/router"
@@ -22,8 +23,9 @@ func main() {
 	R := gin.Default()
 
 	// 调用中间件
-	R.Use(logger.NewLogModel().LoggerToFile(), recover.Recover())
+	R.Use(logger.NewLogModel().LoggerToFile(), recover.Recover(), context.InitContext())
 
+	// 注册路由
 	router.InitRouter(R)
 
 	logger.Info(logger.LogArgs{"msg": "Server Start!!"})

@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"MyServer/util"
 	"fmt"
 	"runtime"
 	"strings"
@@ -38,7 +37,6 @@ func (hook contentHook) Levels() []logrus.Level {
 
 func (hook contentHook) Fire(entry *logrus.Entry) error {
 	entry.Data[hook.Field] = findCaller(hook.Skip)
-	entry.Data["trace_id"] = util.GenerateTraceID()
 	content, err := entry.Bytes()
 	if err != nil {
 		panic(err)

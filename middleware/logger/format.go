@@ -2,7 +2,6 @@ package logger
 
 import (
 	"fmt"
-
 	"github.com/sirupsen/logrus"
 )
 
@@ -66,14 +65,6 @@ func (l *LogFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 			extMsg += "||"
 		}
 		extMsg += fmt.Sprintf("client_ip=%s", clientIp)
-	}
-
-	ticket, exit := entry.Data["ticket"]
-	if exit && ticket != nil {
-		if extMsg != "" {
-			extMsg += "||"
-		}
-		extMsg += fmt.Sprintf("%s", ticket)
 	}
 
 	if extMsg != "" {

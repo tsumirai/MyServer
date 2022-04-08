@@ -1,7 +1,6 @@
 package util
 
 import (
-	"MyServer/middleware/logger"
 	"bytes"
 	"encoding/hex"
 	"fmt"
@@ -15,7 +14,6 @@ func getLocalIP() string {
 	ip := "127.0.0.1"
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		logger.Error(logger.LogArgs{"err": err.Error(), "msg": "获得ip地址失败"})
 		return ip
 	}
 
