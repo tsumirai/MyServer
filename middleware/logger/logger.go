@@ -190,18 +190,12 @@ func (a LogArgs) String() string {
 	b := bytes.Buffer{}
 	keys := make([]string, 0, len(a))
 	for k := range a {
-		if k != "trace_id" {
-			keys = append(keys, k)
-		}
+		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	newKeys := make([]string, 0, len(a))
-	if _, exit := a["trace_id"]; exit {
-		newKeys = append(newKeys, "trace_id")
-	}
-	newKeys = append(newKeys, keys...)
-	for i, k := range newKeys {
-		if i < len(newKeys)-1 {
+
+	for i, k := range keys {
+		if i < len(keys)-1 {
 			b.WriteString(fmt.Sprintf("%+v=%+v||", k, a[k]))
 		} else {
 			b.WriteString(fmt.Sprintf("%+v=%+v", k, a[k]))
@@ -210,11 +204,19 @@ func (a LogArgs) String() string {
 	return b.String()
 }
 
-func (a LogArgs) addTraceID(ctx context.Context) {
-	traceID := ctx.Value("trace_id")
-	if traceID != nil {
-		a["trace_id"] = traceID
+func formatMsg(ctx context.Context, args LogArgs) string {
+	traceID := ""
+	if ctx.Value("trace_id") != nil {
+		traceID = ctx.Value("trace_id").(string)
 	}
+
+	msg := ""
+	if traceID != "" {
+		msg = traceID + "||" + args.String()
+	} else {
+		msg = args.String()
+	}
+	return msg
 }
 
 // todo 日志记录到 MongoDB
@@ -233,120 +235,120 @@ func (l *LogModel) LoggerToMQ() gin.HandlerFunc {
 }
 
 func Infof(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Infof(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Infof(format, msg)
 }
 
 func Warnf(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Warnf(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Warnf(format, msg)
 }
 func Debugf(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Debugf(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Debugf(format, msg)
 }
 func Errorf(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Errorf(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Errorf(format, msg)
 }
 func Tracef(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Tracef(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Tracef(format, msg)
 }
 
 func Panicf(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Panicf(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Panicf(format, msg)
 }
 
 func Printf(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Printf(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Printf(format, msg)
 }
 
 func Fatalf(ctx context.Context, format string, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Fatalf(format, args.String())
+	msg := formatMsg(ctx, args)
+	log.Fatalf(format, msg)
 }
 
 func Trace(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Log(logrus.TraceLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Log(logrus.TraceLevel, msg)
 }
 
 func Debug(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Log(logrus.DebugLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Log(logrus.DebugLevel, msg)
 }
 
 func Info(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Log(logrus.InfoLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Log(logrus.InfoLevel, msg)
 }
 
 func Warn(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Log(logrus.WarnLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Log(logrus.WarnLevel, msg)
 }
 
 func Warning(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Warn(args.String())
+	msg := formatMsg(ctx, args)
+	log.Warn(msg)
 }
 
 func Error(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Log(logrus.ErrorLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Log(logrus.ErrorLevel, msg)
 }
 
 func Fatal(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Log(logrus.FatalLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Log(logrus.FatalLevel, msg)
 	log.Exit(1)
 }
 
 func Panic(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Log(logrus.PanicLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Log(logrus.PanicLevel, msg)
 }
 
 func Traceln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Logln(logrus.TraceLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Logln(logrus.TraceLevel, msg)
 }
 
 func Debugln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Logln(logrus.DebugLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Logln(logrus.DebugLevel, msg)
 }
 
 func Infoln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Logln(logrus.InfoLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Logln(logrus.InfoLevel, msg)
 }
 
 func Warnln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Logln(logrus.WarnLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Logln(logrus.WarnLevel, msg)
 }
 
 func Warningln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Warnln(args.String())
+	msg := formatMsg(ctx, args)
+	log.Warnln(msg)
 }
 
 func Errorln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Logln(logrus.ErrorLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Logln(logrus.ErrorLevel, msg)
 }
 
 func Fatalln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Logln(logrus.FatalLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Logln(logrus.FatalLevel, msg)
 	log.Exit(1)
 }
 
 func Panicln(ctx context.Context, args LogArgs) {
-	args.addTraceID(ctx)
-	log.Logln(logrus.PanicLevel, args.String())
+	msg := formatMsg(ctx, args)
+	log.Logln(logrus.PanicLevel, msg)
 }
