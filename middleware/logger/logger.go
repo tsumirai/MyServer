@@ -212,7 +212,7 @@ func formatMsg(ctx context.Context, args LogArgs) string {
 
 	msg := ""
 	if traceID != "" {
-		msg = traceID + "||" + args.String()
+		msg = "trace_id=" + traceID + "||" + args.String()
 	} else {
 		msg = args.String()
 	}
