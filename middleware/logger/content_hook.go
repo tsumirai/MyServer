@@ -16,6 +16,7 @@ type contentHook struct {
 	output *rotatelogs.RotateLogs
 }
 
+// NewContentHook 自定义日志hook
 func NewContentHook(output *rotatelogs.RotateLogs, levels ...logrus.Level) logrus.Hook {
 	hook := contentHook{
 		Field:  "file",

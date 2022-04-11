@@ -1,7 +1,7 @@
 package main
 
 import (
-	config "MyServer/conf"
+	"MyServer/base"
 	"MyServer/database"
 	newContext "MyServer/middleware/context"
 	"MyServer/middleware/logger"
@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	config.InitConfig()
+	base.InitConfig()
 	logger.NewLogModel().InitLogger()
 	database.InitMysql()
 	database.InitRedis()
@@ -31,7 +31,7 @@ func main() {
 
 	logger.Info(context.TODO(), logger.LogArgs{"msg": "Server Start!!"})
 
-	port := config.Config.GetString("server.port")
+	port := base.Config.GetString("server.port")
 	if port == "" {
 		port = "8991"
 	}

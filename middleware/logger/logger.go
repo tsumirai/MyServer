@@ -1,7 +1,7 @@
 package logger
 
 import (
-	config "MyServer/conf"
+	"MyServer/base"
 	"bytes"
 	"context"
 	"fmt"
@@ -50,10 +50,11 @@ func getCurrentPathByCaller() string {
 	return execPath
 }
 
+// InitLogger 初始化日志配置
 func (l *LogModel) InitLogger() {
-	logFilePath := getCurrentPathByCaller() + config.Config.GetString("log.log_file_path")
-	logFileName := config.Config.GetString("log.log_file_name")
-	errLogFileName := config.Config.GetString("log.err_log_file_name")
+	logFilePath := getCurrentPathByCaller() + base.Config.GetString("log.log_file_path")
+	logFileName := base.Config.GetString("log.log_file_name")
+	errLogFileName := base.Config.GetString("log.err_log_file_name")
 
 	exist, err := pathExists(logFilePath)
 	if err != nil {
@@ -113,7 +114,7 @@ func (l *LogModel) InitLogger() {
 	// log.SetOutput(logContent)
 
 	// 设置日志级别
-	logLevel, err := logrus.ParseLevel(config.Config.GetString("log.log_level"))
+	logLevel, err := logrus.ParseLevel(base.Config.GetString("log.log_level"))
 	if err != nil {
 		fmt.Println("LoggerToFile Parse logLevel failed: ", err.Error())
 		panic(err)
@@ -140,7 +141,7 @@ func (l *LogModel) InitLogger() {
 	log.Info("Init Log Success")
 }
 
-// 将日志输出到文件
+// LoggerToFile 将日志输出到文件
 func (l *LogModel) LoggerToFile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 开始时间
@@ -204,6 +205,7 @@ func (a LogArgs) String() string {
 	return b.String()
 }
 
+// formatMsg 格式化输出日志
 func formatMsg(ctx context.Context, args LogArgs) string {
 	traceID := ""
 	if ctx.Value("trace_id") != nil {

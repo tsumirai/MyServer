@@ -16,6 +16,7 @@ func (u *UserController) Ping(ctx *gin.Context) {
 	u.EchoSuccess(ctx, "PONG")
 }
 
+// RegisterUser 用户注册
 func (u *UserController) RegisterUser(ctx *gin.Context) {
 	var userData model.User
 	err := ctx.BindJSON(&userData)
@@ -25,7 +26,7 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	logger.Info(ctx, logger.LogArgs{"name": userData.Name, "nickName": userData.NickName, "city": userData.City, "sex": userData.Sex, "birthDay": userData.Birthday})
+	logger.Info(ctx, logger.LogArgs{"name": userData.Name, "nickName": userData.NickName, "city": userData.City, "phone": userData.Phone, "passWord": userData.PassWord})
 
 	u.EchoSuccess(ctx, "")
 }

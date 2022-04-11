@@ -1,7 +1,7 @@
 package database
 
 import (
-	config "MyServer/conf"
+	"MyServer/base"
 	"MyServer/middleware/logger"
 	"context"
 
@@ -12,10 +12,10 @@ var RDB *redis.Client
 
 func InitRedis() {
 	RDB = redis.NewClient(&redis.Options{
-		Addr:     config.Config.GetString("redis.ip") + ":" + config.Config.GetString("redis.port"),
-		Password: config.Config.GetString("redis.password"),
-		DB:       config.Config.GetInt("redis.db"),
-		PoolSize: config.Config.GetInt("redis.pool_size"),
+		Addr:     base.Config.GetString("redis.ip") + ":" + base.Config.GetString("redis.port"),
+		Password: base.Config.GetString("redis.password"),
+		DB:       base.Config.GetInt("redis.db"),
+		PoolSize: base.Config.GetInt("redis.pool_size"),
 	})
 
 	_, err := RDB.Ping().Result()

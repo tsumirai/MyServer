@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Recover 自定义recover
 func Recover() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
