@@ -6,8 +6,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type BaseService struct{}
+type BaseDao struct{}
 
-func (c *BaseService) GetDB() *gorm.DB {
+func (c *BaseDao) GetDB() *gorm.DB {
 	return database.DB
 }
