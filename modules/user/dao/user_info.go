@@ -18,21 +18,58 @@ func NewUserDao() *UserDao {
 	return &UserDao{}
 }
 
-func (d *UserDao) CreateUserInfo(ctx context.Context, userInfo *model.UserInfo) (*model.UserInfo, error) {
-	if userInfo == nil {
-		err := fmt.Errorf("参数不能为空！")
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "参数不能为空"})
-		return nil, err
+// CreateUser 创建用户
+func (d *UserDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+	if param == nil {
+		return nil, fmt.Errorf("参数不能为空")
 	}
 
 	db := d.GetDB().Table(UserInfoTable)
-	err := db.Create(userInfo).Error
+
+	err := db.Create(param).Error
 	if err != nil {
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "插入用户信息失败"})
+		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "创建用户失败"})
 		return nil, err
 	}
 
-	return userInfo, nil
+	logger.Info(ctx, logger.LogArgs{"msg": "创建新用户", "id": param.ID, "uid": param.UID, "loginType": param.LoginType, "phone": param.Phone})
+	return param, nil
+}
+
+// GetUserInfoByParam 根据参数获得用户信息
+func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+	if param == nil {
+		return nil, fmt.Errorf("参数不能为空")
+	}
+
+	result := &model.UserInfo{}
+	db := d.GetDB().Table(UserInfoTable)
+	if param.ID != 0 {
+		db.Where("id = ?", param.ID)
+	}
+
+	if param.UID != "" {
+		db.Where("uid = ?", param.UID)
+	}
+
+	if param.LoginType != 0 {
+		db.Where("login_type = ?", param.LoginType)
+	}
+
+	if param.Phone != "" {
+		db.Where("phone = ?", param.Phone)
+	}
+
+	if param.NickName != "" {
+		db.Where("nick_name is like ?", param.NickName)
+	}
+
+	db = db.Find(&result)
+	if err := db.Error; err != nil {
+		logger.Error(ctx, logger.LogArgs{"err": err.Error, "msg": "查询用户信息失败", "id": param.ID, "uid": param.UID, "phone": param.Phone, "loginType": param.LoginType})
+		return nil, err
+	}
+	return result, nil
 }
 
 // UpdateUserInfoByUID 根据uid更新用户信息
@@ -57,24 +94,4 @@ func (d *UserDao) UpdateUserInfoByUID(ctx context.Context, userInfo *model.UserI
 	}
 
 	return userInfo, nil
-}
-
-// GetUserInfoByUID 根据uid查询用户信息
-func (d *UserDao) GetUserInfoByUID(ctx context.Context, uid string) (*model.UserInfo, error) {
-	if uid == "" {
-		err := fmt.Errorf("uid为空！！")
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "uid为空"})
-		return nil, err
-	}
-
-	db := d.GetDB().Table(UserInfoTable)
-	db.Where("uid = ?", uid)
-	result := &model.UserInfo{}
-	db = db.Find(&result)
-	if err := db.Error; err != nil {
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "查询用户信息失败", "uid": uid})
-		return nil, err
-	}
-
-	return result, nil
 }

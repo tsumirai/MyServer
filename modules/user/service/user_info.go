@@ -4,10 +4,13 @@ import (
 	"MyServer/common"
 	commonConsts "MyServer/consts"
 	"MyServer/middleware/logger"
+	"MyServer/modules/user/consts"
 	"MyServer/modules/user/dao"
 	"MyServer/modules/user/dto"
 	"MyServer/modules/user/model"
 	"context"
+	"fmt"
+	"github.com/bwmarrin/snowflake"
 	"time"
 )
 
@@ -19,10 +22,59 @@ func NewUserService() *UserService {
 	return &UserService{}
 }
 
+// CreateUser 创建新用户
+func (s *UserService) CreateUser(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+	userDao := dao.NewUserDao()
+	if param.Password == "" {
+		err := fmt.Errorf("用户密码不能为空")
+		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "用户密码不能为空", "passWord": param.Password})
+		return nil, err
+	}
+
+	if param.LoginType == consts.LoginTypePhone && param.Phone == "" {
+		err := fmt.Errorf("用户手机号不能为空")
+		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "用户手机号不能为空", "phone": param.Phone})
+		return nil, err
+	}
+
+	// 生成uid
+	node, err := snowflake.NewNode(1)
+	if err != nil {
+		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "创建用户失败"})
+		return nil, err
+	}
+
+	uid := node.Generate().String()
+	param.UID = uid
+
+	param.RegisterTime = time.Now()
+	param.UpdateTime = time.Now()
+
+	userInfo, err := userDao.CreateUser(ctx, param)
+	if err != nil {
+		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "创建用户失败", "id": param.ID, "uid": param.UID, "loginType": param.LoginType, "phone": param.Phone})
+		return nil, err
+	}
+
+	return userInfo, nil
+}
+
+// GetUserInfoByParam 获得用户信息
+func (s *UserService) GetUserInfoByParam(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+	userDao := dao.NewUserDao()
+	userInfo, err := userDao.GetUserInfoByParam(ctx, param)
+	if err != nil {
+		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "获得用户信息失败", "id": param.ID, "uid": param.UID, "loginType": param.LoginType, "phone": param.Phone})
+		return nil, err
+	}
+
+	return userInfo, nil
+}
+
 // GetUserInfoByUID 根据UID查询用户信息
 func (s *UserService) GetUserInfoByUID(ctx context.Context, uid string) (*model.UserInfo, error) {
 	userDao := dao.NewUserDao()
-	userInfo, err := userDao.GetUserInfoByUID(ctx, uid)
+	userInfo, err := userDao.GetUserInfoByParam(ctx, &model.UserInfo{UID: uid})
 	if err != nil {
 		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "查询用户信息失败", "uid": uid})
 		return nil, err
@@ -42,19 +94,21 @@ func (s *UserService) UpdateUserInfoByUID(ctx context.Context, userInfo *dto.Use
 	}
 	newUserInfo := &model.UserInfo{
 		UID:          userInfo.UID,
+		Phone:        userInfo.Phone,
+		Password:     userInfo.Password,
+		LoginType:    int64(userInfo.LoginType),
 		NickName:     userInfo.NickName,
 		Birthday:     birthDay,
 		ProfilePhoto: userInfo.ProfilePhoto,
-		Sex:          userInfo.Sex,
-		City:         userInfo.City,
+		Sex:          int64(userInfo.Sex),
+		City:         int64(userInfo.City),
 		Signature:    userInfo.Signature,
-		UpdateTime:   time.Now(),
 	}
 
 	result, err := s.GetUserInfoByUID(ctx, userInfo.UID)
 	if err != nil || result == nil {
 		// 查询失败或者userInfo为空，认为不存在，需要插入
-		result, err := userDao.CreateUserInfo(ctx, newUserInfo)
+		result, err := userDao.CreateUser(ctx, newUserInfo)
 		if err != nil {
 			logger.Error(ctx, logger.LogArgs{"err": err, "msg": "插入用户信息失败"})
 			return nil, err

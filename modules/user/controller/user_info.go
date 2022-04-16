@@ -2,8 +2,10 @@ package controller
 
 import (
 	"MyServer/common"
+	commonConsts "MyServer/consts"
 	"MyServer/middleware/logger"
 	"MyServer/modules/user/dto"
+	"MyServer/modules/user/model"
 	"MyServer/modules/user/service"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +13,53 @@ import (
 
 type UserController struct {
 	*common.BaseController
+}
+
+// UserLogin 用户登录（未注册用户自动注册）
+func (u *UserController) UserLogin(ctx *gin.Context) {
+	var userData model.UserInfo
+	err := ctx.BindJSON(&userData)
+	if err != nil {
+		logger.Error(ctx, logger.LogArgs{"msg": "UserLogin Failed", "err": err.Error()})
+		u.EchoErrorStruct(ctx, common.ErrJSONUnmarshallFailed)
+		return
+	}
+
+	logger.Info(ctx, logger.LogArgs{"name": userData.LoginType, "nickName": userData.Password, "city": userData.Phone})
+
+	result := &dto.UserInfo{}
+	needRegister := false
+	userService := service.NewUserService()
+
+	userInfo, err := userService.GetUserInfoByParam(ctx, &userData)
+	if err != nil {
+		// 获得用户信息失败则认为无该用户，需要注册
+		needRegister = true
+	}
+
+	if needRegister {
+		userInfo, err = userService.CreateUser(ctx, &userData)
+		if err != nil {
+			logger.Error(ctx, logger.LogArgs{"err": err, "msg": "创建新用户失败", "id": userData.ID, "uid": userData.UID, "loginType": userData.LoginType, "phone": userData.Phone})
+			u.EchoErrorStruct(ctx, common.ErrUserRegisterFailed)
+			return
+		}
+	}
+
+	result.ID = userInfo.ID
+	result.UID = userInfo.UID
+	result.Phone = userInfo.Phone
+	result.LoginType = int(userInfo.LoginType)
+	result.NickName = userInfo.NickName
+	result.Sex = int(userInfo.Sex)
+	result.City = int(userInfo.City)
+	result.Birthday = userInfo.Birthday.Format(commonConsts.TimeFormatData)
+	result.ProfilePhoto = userInfo.ProfilePhoto
+	result.Signature = userInfo.Signature
+	result.RegisterTime = userInfo.RegisterTime
+	result.UpdateTime = userInfo.UpdateTime
+
+	u.EchoSuccess(ctx, result)
 }
 
 // GetUserInfo 获得用户信息
