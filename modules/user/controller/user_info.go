@@ -39,7 +39,7 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 		Phone:     userData.Phone,
 		LoginType: int64(userData.LoginType),
 	})
-	if err != nil {
+	if err != nil || userInfo == nil {
 		// 获得用户信息失败则认为无该用户，需要注册
 		needRegister = true
 	}

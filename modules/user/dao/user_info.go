@@ -69,6 +69,8 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 		logger.Error(ctx, logger.LogArgs{"err": err.Error, "msg": "查询用户信息失败", "id": param.ID, "uid": param.UID, "phone": param.Phone, "loginType": param.LoginType})
 		return nil, err
 	}
+	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
+	fmt.Println("--------------------", sql)
 
 	return result, nil
 }
@@ -88,7 +90,7 @@ func (d *UserDao) UpdateUserInfoByUID(ctx context.Context, userInfo *model.UserI
 	}
 
 	db := d.GetDB().Table(UserInfoTable)
-	err := db.Where("uid = ?", userInfo.UID).Update(userInfo).Error
+	err := db.Where("uid = ?", userInfo.UID).Updates(userInfo).Error
 	if err != nil {
 		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "更新用户信息失败"})
 		return nil, err

@@ -59,7 +59,6 @@ func (s *UserService) CreateUser(ctx context.Context, param *model.UserInfo) (*m
 // GetUserInfoByParam 获得用户信息
 func (s *UserService) GetUserInfoByParam(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
 	userDao := dao.NewUserDao()
-	fmt.Println("========", param.Phone, param.LoginType)
 	userInfo, err := userDao.GetUserInfoByParam(ctx, param)
 	if err != nil {
 		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "获得用户信息失败", "id": param.ID, "uid": param.UID, "loginType": param.LoginType, "phone": param.Phone})

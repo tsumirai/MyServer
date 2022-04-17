@@ -2,8 +2,7 @@ package common
 
 import (
 	"MyServer/database"
-
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type BaseDao struct{}
