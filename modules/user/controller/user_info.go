@@ -21,7 +21,7 @@ func (u *UserController) Ping(ctx *gin.Context) {
 
 // UserLogin 用户登录（未注册用户自动注册）
 func (u *UserController) UserLogin(ctx *gin.Context) {
-	var userData model.UserInfo
+	var userData dto.UserInfo
 	err := ctx.BindJSON(&userData)
 	if err != nil {
 		logger.Error(ctx, logger.LogArgs{"msg": "UserLogin Failed", "err": err.Error()})
@@ -35,14 +35,24 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 	needRegister := false
 	userService := service.NewUserService()
 
-	userInfo, err := userService.GetUserInfoByParam(ctx, &userData)
+	userInfo, err := userService.GetUserInfoByParam(ctx, &model.UserInfo{
+		Phone:     userData.Phone,
+		LoginType: int64(userData.LoginType),
+	})
 	if err != nil {
 		// 获得用户信息失败则认为无该用户，需要注册
 		needRegister = true
 	}
 
 	if needRegister {
-		userInfo, err = userService.CreateUser(ctx, &userData)
+		userModelData, err := userService.ConvertUserModelData(ctx, &userData)
+		if err != nil {
+			logger.Error(ctx, logger.LogArgs{"err": err, "msg": "用户数据转换失败"})
+			u.EchoErrorStruct(ctx, common.ErrUserRegisterFailed)
+			return
+		}
+
+		userInfo, err = userService.CreateUser(ctx, userModelData)
 		if err != nil {
 			logger.Error(ctx, logger.LogArgs{"err": err, "msg": "创建新用户失败", "id": userData.ID, "uid": userData.UID, "loginType": userData.LoginType, "phone": userData.Phone})
 			u.EchoErrorStruct(ctx, common.ErrUserRegisterFailed)
@@ -60,8 +70,6 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 	result.Birthday = userInfo.Birthday.Format(commonConsts.TimeFormatData)
 	result.ProfilePhoto = userInfo.ProfilePhoto
 	result.Signature = userInfo.Signature
-	result.RegisterTime = userInfo.RegisterTime
-	result.UpdateTime = userInfo.UpdateTime
 
 	u.EchoSuccess(ctx, result)
 }

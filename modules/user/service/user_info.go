@@ -124,3 +124,28 @@ func (s *UserService) UpdateUserInfoByUID(ctx context.Context, userInfo *dto.Use
 
 	return result, nil
 }
+
+// ConvertUserModelData 转换用户数据
+func (s *UserService) ConvertUserModelData(ctx context.Context, userDtoData *dto.UserInfo) (*model.UserInfo, error) {
+	birthDay, err := time.Parse(commonConsts.TimeFormatData, userDtoData.Birthday)
+	if err != nil {
+		logger.Error(ctx, logger.LogArgs{"msg": "用户数据转换失败", "err": err.Error()})
+		return nil, err
+	}
+	result := &model.UserInfo{
+		ID:           userDtoData.ID,
+		UID:          userDtoData.UID,
+		Phone:        userDtoData.Phone,
+		Password:     userDtoData.Password,
+		LoginType:    int64(userDtoData.LoginType),
+		NickName:     userDtoData.NickName,
+		Sex:          int64(userDtoData.Sex),
+		City:         int64(userDtoData.City),
+		Birthday:     birthDay,
+		ProfilePhoto: userDtoData.ProfilePhoto,
+		Signature:    userDtoData.Signature,
+		RegisterTime: userDtoData.RegisterTime,
+		UpdateTime:   userDtoData.UpdateTime,
+	}
+	return result, nil
+}
