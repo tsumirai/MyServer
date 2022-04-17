@@ -70,8 +70,10 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 	result.Birthday = userInfo.Birthday.Format(commonConsts.TimeFormatData)
 	result.ProfilePhoto = userInfo.ProfilePhoto
 	result.Signature = userInfo.Signature
+	result.RegisterTime = userInfo.RegisterTime.Format(commonConsts.TimeFormat)
 
 	u.EchoSuccess(ctx, result)
+	return
 }
 
 // GetUserInfo 获得用户信息
@@ -95,6 +97,7 @@ func (u *UserController) GetUserInfo(ctx *gin.Context) {
 	}
 
 	u.EchoSuccess(ctx, result)
+	return
 }
 
 // UpdateUserInfo 更新用户信息
@@ -118,4 +121,5 @@ func (u *UserController) UpdateUserInfo(ctx *gin.Context) {
 	}
 
 	u.EchoSuccess(ctx, result)
+	return
 }
