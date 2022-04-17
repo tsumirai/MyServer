@@ -46,6 +46,7 @@ func (s *UserService) CreateUser(ctx context.Context, param *model.UserInfo) (*m
 
 	uid := node.Generate().String()
 	param.UID = uid
+	param.RegisterTime = time.Now()
 
 	userInfo, err := userDao.CreateUser(ctx, param)
 	if err != nil {
