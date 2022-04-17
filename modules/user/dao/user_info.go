@@ -42,7 +42,6 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 		return nil, fmt.Errorf("参数不能为空")
 	}
 
-	fmt.Println("=====================", param.LoginType, param.Phone)
 	result := &model.UserInfo{}
 	db := d.GetDB().Table(UserInfoTable)
 	if param.ID != 0 {
