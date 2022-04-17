@@ -70,7 +70,7 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 		return nil, err
 	}
 	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
-	fmt.Println("--------------------", sql)
+	fmt.Println("--------------------", db.Statement.SQL.String(), sql)
 
 	return result, nil
 }
