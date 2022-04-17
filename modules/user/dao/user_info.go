@@ -65,7 +65,7 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 		db.Where("nick_name is like ?", param.NickName)
 	}
 
-	db = db.Find(&result)
+	db = db.Take(&result)
 	if err := db.Error; err != nil {
 		logger.Error(ctx, logger.LogArgs{"err": err.Error, "msg": "查询用户信息失败", "id": param.ID, "uid": param.UID, "phone": param.Phone, "loginType": param.LoginType})
 		return nil, err
