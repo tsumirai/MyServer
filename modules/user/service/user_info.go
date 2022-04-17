@@ -141,8 +141,6 @@ func (s *UserService) ConvertUserModelData(ctx context.Context, userDtoData *dto
 		Birthday:     birthDay,
 		ProfilePhoto: userDtoData.ProfilePhoto,
 		Signature:    userDtoData.Signature,
-		RegisterTime: userDtoData.RegisterTime,
-		UpdateTime:   userDtoData.UpdateTime,
 	}
 	return result, nil
 }
