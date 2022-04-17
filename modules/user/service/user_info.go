@@ -47,9 +47,6 @@ func (s *UserService) CreateUser(ctx context.Context, param *model.UserInfo) (*m
 	uid := node.Generate().String()
 	param.UID = uid
 
-	param.RegisterTime = time.Now()
-	param.UpdateTime = time.Now()
-
 	userInfo, err := userDao.CreateUser(ctx, param)
 	if err != nil {
 		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "创建用户失败", "id": param.ID, "uid": param.UID, "loginType": param.LoginType, "phone": param.Phone})
