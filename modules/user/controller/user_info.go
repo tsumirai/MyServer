@@ -29,7 +29,7 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 		return
 	}
 
-	logger.Info(ctx, logger.LogArgs{"name": userData.LoginType, "nickName": userData.Password, "city": userData.Phone})
+	logger.Info(ctx, logger.LogArgs{"name": userData.LoginType, "nickName": userData.Password, "city": userData.City, "phone": userData.Phone})
 
 	result := &dto.UserInfo{}
 	needRegister := false
