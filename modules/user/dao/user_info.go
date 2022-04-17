@@ -42,6 +42,7 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 		return nil, fmt.Errorf("参数不能为空")
 	}
 
+	fmt.Println("=====================", param.LoginType, param.Phone)
 	result := &model.UserInfo{}
 	db := d.GetDB().Table(UserInfoTable)
 	if param.ID != 0 {
@@ -69,8 +70,6 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 		logger.Error(ctx, logger.LogArgs{"err": err.Error, "msg": "查询用户信息失败", "id": param.ID, "uid": param.UID, "phone": param.Phone, "loginType": param.LoginType})
 		return nil, err
 	}
-	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
-	fmt.Println("--------------------", db.Statement.SQL.String(), sql)
 
 	return result, nil
 }
