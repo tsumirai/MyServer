@@ -20,9 +20,9 @@ func InitRedis() {
 
 	_, err := RDB.Ping().Result()
 	if err != nil {
-		logger.Error(context.TODO(), logger.LogArgs{"msg": "InitRedis failed", "err": err.Error()})
+		logger.Error(context.TODO(), "InitRedis", logger.LogArgs{"msg": "InitRedis failed", "err": err.Error()})
 		panic(err)
 	}
 
-	logger.Info(context.TODO(), logger.LogArgs{"msg": "InitRedis Success!"})
+	logger.Info(context.TODO(), "InitRedis", logger.LogArgs{"msg": "InitRedis Success!"})
 }

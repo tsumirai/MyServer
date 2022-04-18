@@ -29,7 +29,7 @@ func main() {
 	// 注册路由
 	router.InitRouter(R)
 
-	logger.Info(context.TODO(), logger.LogArgs{"msg": "Server Start!!"})
+	logger.Info(context.TODO(), "main", logger.LogArgs{"msg": "Server Start!!"})
 
 	port := base.Config.GetString("server.port")
 	if port == "" {
@@ -37,7 +37,7 @@ func main() {
 	}
 	err := R.Run(":" + port)
 	if err != nil {
-		logger.Fatal(context.TODO(), logger.LogArgs{"msg": "启动服务失败", "err": err.Error()})
+		logger.Fatal(context.TODO(), "main", logger.LogArgs{"msg": "启动服务失败", "err": err.Error()})
 		os.Exit(1)
 	}
 }

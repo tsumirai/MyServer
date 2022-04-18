@@ -28,11 +28,11 @@ func (d *UserDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model
 
 	err := db.Create(param).Error
 	if err != nil {
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "创建用户失败"})
+		logger.Error(ctx, "CreateUser", logger.LogArgs{"err": err, "msg": "创建用户失败"})
 		return nil, err
 	}
 
-	logger.Info(ctx, logger.LogArgs{"msg": "创建新用户", "id": param.ID, "uid": param.UID, "loginType": param.LoginType, "phone": param.Phone})
+	logger.Info(ctx, "CreateUser", logger.LogArgs{"msg": "创建新用户", "id": param.ID, "uid": param.UID, "loginType": param.LoginType, "phone": param.Phone})
 	return param, nil
 }
 
@@ -66,7 +66,7 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 
 	db = db.Take(&result)
 	if err := db.Error; err != nil {
-		logger.Error(ctx, logger.LogArgs{"err": err.Error, "msg": "查询用户信息失败", "id": param.ID, "uid": param.UID, "phone": param.Phone, "loginType": param.LoginType})
+		logger.Error(ctx, "GetUserInfoByParam", logger.LogArgs{"err": err.Error, "msg": "查询用户信息失败", "id": param.ID, "uid": param.UID, "phone": param.Phone, "loginType": param.LoginType})
 		return nil, err
 	}
 
@@ -77,20 +77,20 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 func (d *UserDao) UpdateUserInfoByUID(ctx context.Context, userInfo *model.UserInfo) (*model.UserInfo, error) {
 	if userInfo == nil {
 		err := fmt.Errorf("参数不能为空")
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "参数不能为空"})
+		logger.Error(ctx, "UpdateUserInfoByUID", logger.LogArgs{"err": err, "msg": "参数不能为空"})
 		return nil, err
 	}
 
 	if userInfo.UID == "" {
 		err := fmt.Errorf("UID不能为空")
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "UID不能为空"})
+		logger.Error(ctx, "UpdateUserInfoByUID", logger.LogArgs{"err": err, "msg": "UID不能为空"})
 		return nil, err
 	}
 
 	db := d.GetDB().Table(UserInfoTable)
 	err := db.Where("uid = ?", userInfo.UID).Updates(userInfo).Error
 	if err != nil {
-		logger.Error(ctx, logger.LogArgs{"err": err, "msg": "更新用户信息失败"})
+		logger.Error(ctx, "UpdateUserInfoByUID", logger.LogArgs{"err": err, "msg": "更新用户信息失败"})
 		return nil, err
 	}
 

@@ -206,7 +206,7 @@ func (a LogArgs) String() string {
 }
 
 // formatMsg 格式化输出日志
-func formatMsg(ctx context.Context, args LogArgs) string {
+func formatMsg(ctx context.Context, module string, args LogArgs) string {
 	traceID := ""
 	if ctx.Value("trace_id") != nil {
 		traceID = ctx.Value("trace_id").(string)
@@ -214,10 +214,15 @@ func formatMsg(ctx context.Context, args LogArgs) string {
 
 	msg := ""
 	if traceID != "" {
-		msg = "trace_id=" + traceID + "||" + args.String()
-	} else {
-		msg = args.String()
+		msg += "trace_id=" + traceID + "||"
 	}
+
+	if module != "" {
+		msg += "module=" + module + "||"
+	}
+
+	msg += args.String()
+
 	return msg
 }
 
@@ -236,121 +241,38 @@ func (l *LogModel) LoggerToMQ() gin.HandlerFunc {
 	return func(c *gin.Context) {}
 }
 
-func Infof(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Infof(format, msg)
-}
-
-func Warnf(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Warnf(format, msg)
-}
-func Debugf(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Debugf(format, msg)
-}
-func Errorf(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Errorf(format, msg)
-}
-func Tracef(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Tracef(format, msg)
-}
-
-func Panicf(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Panicf(format, msg)
-}
-
-func Printf(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Printf(format, msg)
-}
-
-func Fatalf(ctx context.Context, format string, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Fatalf(format, msg)
-}
-
-func Trace(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
+func Trace(ctx context.Context, module string, args LogArgs) {
+	msg := formatMsg(ctx, module, args)
 	log.Log(logrus.TraceLevel, msg)
 }
 
-func Debug(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
+func Debug(ctx context.Context, module string, args LogArgs) {
+	msg := formatMsg(ctx, module, args)
 	log.Log(logrus.DebugLevel, msg)
 }
 
-func Info(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
+func Info(ctx context.Context, module string, args LogArgs) {
+	msg := formatMsg(ctx, module, args)
 	log.Log(logrus.InfoLevel, msg)
 }
 
-func Warn(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
+func Warn(ctx context.Context, module string, args LogArgs) {
+	msg := formatMsg(ctx, module, args)
 	log.Log(logrus.WarnLevel, msg)
 }
 
-func Warning(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Warn(msg)
-}
-
-func Error(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
+func Error(ctx context.Context, module string, args LogArgs) {
+	msg := formatMsg(ctx, module, args)
 	log.Log(logrus.ErrorLevel, msg)
 }
 
-func Fatal(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
+func Fatal(ctx context.Context, module string, args LogArgs) {
+	msg := formatMsg(ctx, module, args)
 	log.Log(logrus.FatalLevel, msg)
 	log.Exit(1)
 }
 
-func Panic(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
+func Panic(ctx context.Context, module string, args LogArgs) {
+	msg := formatMsg(ctx, module, args)
 	log.Log(logrus.PanicLevel, msg)
-}
-
-func Traceln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Logln(logrus.TraceLevel, msg)
-}
-
-func Debugln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Logln(logrus.DebugLevel, msg)
-}
-
-func Infoln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Logln(logrus.InfoLevel, msg)
-}
-
-func Warnln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Logln(logrus.WarnLevel, msg)
-}
-
-func Warningln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Warnln(msg)
-}
-
-func Errorln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Logln(logrus.ErrorLevel, msg)
-}
-
-func Fatalln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Logln(logrus.FatalLevel, msg)
-	log.Exit(1)
-}
-
-func Panicln(ctx context.Context, args LogArgs) {
-	msg := formatMsg(ctx, args)
-	log.Logln(logrus.PanicLevel, msg)
 }
