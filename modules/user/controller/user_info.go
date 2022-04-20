@@ -76,22 +76,22 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 	return
 }
 
-// GetUserInfo 获得用户信息
-func (u *UserController) GetUserInfo(ctx *gin.Context) {
+// GetUserInfoByUID 获得用户信息
+func (u *UserController) GetUserInfoByUID(ctx *gin.Context) {
 	var userData dto.UserInfo
 	err := ctx.BindJSON(&userData)
 	if err != nil {
-		logger.Error(ctx, "GetUserInfo", logger.LogArgs{"msg": "Get UserInfo Failed", "err": err.Error()})
+		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"msg": "Get UserInfo Failed", "err": err.Error()})
 		u.EchoErrorStruct(ctx, common.ErrJSONUnmarshallFailed)
 		return
 	}
 
-	logger.Info(ctx, "GetUserInfo", logger.LogArgs{"uid": userData.UID, "nickName": userData.NickName, "city": userData.City, "birtyDay": userData.Birthday, "sex": userData.Sex, "signature": userData.Signature, "photo": userData.ProfilePhoto})
+	logger.Info(ctx, "GetUserInfoByUID", logger.LogArgs{"uid": userData.UID, "nickName": userData.NickName, "city": userData.City, "birtyDay": userData.Birthday, "sex": userData.Sex, "signature": userData.Signature, "photo": userData.ProfilePhoto})
 
 	userService := service.NewUserService()
 	result, err := userService.GetUserInfoByUID(ctx, userData.UID)
 	if err != nil {
-		logger.Error(ctx, "GetUserInfo", logger.LogArgs{"err": err, "msg": "查询用户信息失败", "uid": userData.UID})
+		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "查询用户信息失败", "uid": userData.UID})
 		u.EchoErrorStruct(ctx, common.ErrGetUserInfoFailed)
 		return
 	}

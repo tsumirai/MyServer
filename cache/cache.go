@@ -72,7 +72,6 @@ func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime in
 	}
 	exit, err := c.Exists(key)
 	if err != nil {
-		fmt.Println("======================设置缓存", err.Error())
 		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "查询键失败", "err": err.Error()})
 		result, err = c.callbackFunc(ctx, key, subKeys...)
 		if err != nil {
@@ -83,7 +82,6 @@ func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime in
 	}
 
 	if !exit {
-		fmt.Println("======================设置缓存", exit)
 		result, err = c.callbackFunc(ctx, key, subKeys...)
 		if err != nil {
 			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
@@ -99,7 +97,6 @@ func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime in
 		resultStr, err = c.Get(key)
 	}
 	if err != nil {
-		fmt.Println("======================设置缓存", err.Error())
 		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从redis中获取数据失败", "err": err.Error()})
 		result, err = c.callbackFunc(ctx, key, subKeys...)
 		if err != nil {

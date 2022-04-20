@@ -77,7 +77,6 @@ func (s *UserService) GetUserInfoByUID(ctx context.Context, uid string) (*model.
 	cacheSvr.RegisterCallbackFunc(s.GetUserInfoByUIDCallback)
 
 	var result *model.UserInfo
-	fmt.Println("======================设置缓存")
 	resByte, err := cacheSvr.GetValueFromCache(ctx, cache.GetUserInfoRedisKey(uid), commonConsts.FiveMinute)
 	if err != nil {
 		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "获取用户数据失败"})
