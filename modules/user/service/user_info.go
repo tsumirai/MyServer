@@ -71,36 +71,13 @@ func (s *UserService) GetUserInfoByParam(ctx context.Context, param *model.UserI
 	return userInfo, nil
 }
 
-func GetUserInfoByUIDCallback(ctx context.Context, key string, uids ...string) ([]byte, error) {
-	userDao := dao.NewUserDao()
-	if len(uids) <= 0 {
-		err := fmt.Errorf("uid长度有误")
-		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": err.Error()})
-		return nil, err
-	}
-
-	userInfo, err := userDao.GetUserInfoByParam(ctx, &model.UserInfo{UID: uids[0]})
-	if err != nil {
-		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "查询用户信息失败", "uid": uids[0]})
-		return nil, err
-	}
-
-	result, err := json.Marshal(userInfo)
-	if err != nil {
-		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "json序列化失败", "uid": uids[0]})
-		return nil, err
-	}
-
-	return result, nil
-}
-
 // GetUserInfoByUID 根据UID查询用户信息
 func (s *UserService) GetUserInfoByUID(ctx context.Context, uid string) (*model.UserInfo, error) {
 	cacheSvr := cache.NewCache()
-	cacheSvr.RegisterCallbackFunc(GetUserInfoByUIDCallback)
+	cacheSvr.RegisterCallbackFunc(s.GetUserInfoByUIDCallback)
 
 	var result *model.UserInfo
-	resByte, err := cacheSvr.GetValueFromHashCache(ctx, cache.GetUserInfoRedisKey(), uid)
+	resByte, err := cacheSvr.GetValueFromCache(ctx, cache.GetUserInfoRedisKey(uid), commonConsts.FiveMinute)
 	if err != nil {
 		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "获取用户数据失败"})
 		return nil, err

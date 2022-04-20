@@ -62,12 +62,12 @@ func (c *Cache) SetDataToRedis(ctx context.Context, key, subKey string, value []
 }
 
 // GetValueFromCache 从redis中获取数据，获取失败则从mysql中获取
-func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime int) ([]byte, error) {
+func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime int, subKey ...string) ([]byte, error) {
 	result := make([]byte, 0)
 	exit, err := c.Exists(key)
 	if err != nil {
 		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "查询键失败", "err": err.Error()})
-		result, err = c.callbackFunc(ctx, key)
+		result, err = c.callbackFunc(ctx, key, subKey...)
 		if err != nil {
 			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
 			return []byte{}, err
@@ -76,7 +76,7 @@ func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime in
 	}
 
 	if !exit {
-		result, err = c.callbackFunc(ctx, key)
+		result, err = c.callbackFunc(ctx, key, subKey...)
 		if err != nil {
 			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
 			return []byte{}, err
@@ -84,10 +84,15 @@ func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime in
 		return c.SetDataToRedis(ctx, key, "", result, expireTime)
 	}
 
-	resultStr, err := c.Get(key)
+	var resultStr string
+	if subKey != nil && len(subKey) > 0 {
+		resultStr, err = c.HGet(key, subKey[0])
+	} else {
+		resultStr, err = c.Get(key)
+	}
 	if err != nil {
 		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从redis中获取数据失败", "err": err.Error()})
-		result, err = c.callbackFunc(ctx, key)
+		result, err = c.callbackFunc(ctx, key, subKey...)
 		if err != nil {
 			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
 			return []byte{}, err

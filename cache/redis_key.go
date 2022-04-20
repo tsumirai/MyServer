@@ -1,5 +1,7 @@
 package cache
 
-func GetUserInfoRedisKey() string {
-	return "user_info"
+import "fmt"
+
+func GetUserInfoRedisKey(uid string) string {
+	return fmt.Sprintf("user_info_uid:%v", uid)
 }
