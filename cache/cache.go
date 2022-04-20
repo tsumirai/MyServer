@@ -225,3 +225,13 @@ func (c *Cache) Expire(key string, expire int) error {
 	}
 	return nil
 }
+
+func (c *Cache) Del(key string) error {
+	conn := c.redisPool.Get()
+	defer conn.Close()
+	_, err := conn.Do("del", key)
+	if err != nil {
+		return err
+	}
+	return nil
+}

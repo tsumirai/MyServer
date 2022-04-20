@@ -130,6 +130,11 @@ func (s *UserService) UpdateUserInfoByUID(ctx context.Context, userInfo *dto.Use
 		return nil, err
 	}
 
+	err = userDao.DelUserInfoRedisByUID(ctx, userInfo.UID)
+	if err != nil {
+		logger.Error(ctx, "UpdateUserInfoByUID", logger.LogArgs{"err": err, "msg": "删除用户缓存失败"})
+	}
+
 	return result, nil
 }
 
