@@ -29,12 +29,12 @@ func redisPool() *redis.Pool {
 				return nil, err
 			}
 
-			if _, err := conn.Do("AUTH", base.Config.GetString("redis.password")); err != nil {
-				conn.Close()
-				logger.Error(context.TODO(), "redisPool", logger.LogArgs{"msg": "redisPool failed", "err": err.Error()})
-				panic(err)
-				return nil, err
-			}
+			//if _, err := conn.Do("AUTH", base.Config.GetString("redis.password")); err != nil {
+			//	conn.Close()
+			//	logger.Error(context.TODO(), "redisPool", logger.LogArgs{"msg": "redisPool failed", "err": err.Error()})
+			//	panic(err)
+			//	return nil, err
+			//}
 			return conn, err
 		},
 	}
