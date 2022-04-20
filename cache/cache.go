@@ -4,6 +4,7 @@ import (
 	"MyServer/database"
 	"MyServer/middleware/logger"
 	"context"
+	"fmt"
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -27,6 +28,7 @@ func (c *Cache) RegisterCallbackFunc(callbackFunc CallbackMysqlFunc) {
 // SetDataToRedis 把数据存到redis中
 func (c *Cache) SetDataToRedis(ctx context.Context, key, subKey string, value []byte, expireTime int) ([]byte, error) {
 	var err error
+	fmt.Println("===========================开始设置缓存", key, subKey, value, expireTime)
 	if value != nil {
 		if subKey == "" {
 			if expireTime != 0 {
@@ -62,83 +64,90 @@ func (c *Cache) SetDataToRedis(ctx context.Context, key, subKey string, value []
 }
 
 // GetValueFromCache 从redis中获取数据，获取失败则从mysql中获取
-func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime int, subKey ...string) ([]byte, error) {
+func (c *Cache) GetValueFromCache(ctx context.Context, key string, expireTime int, subKeys ...string) ([]byte, error) {
 	result := make([]byte, 0)
+	subKey := ""
+	if subKeys != nil && len(subKeys) > 0 {
+		subKey = subKeys[0]
+	}
 	exit, err := c.Exists(key)
 	if err != nil {
+		fmt.Println("======================设置缓存", err.Error())
 		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "查询键失败", "err": err.Error()})
-		result, err = c.callbackFunc(ctx, key, subKey...)
+		result, err = c.callbackFunc(ctx, key, subKeys...)
 		if err != nil {
 			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
 			return []byte{}, err
 		}
-		return c.SetDataToRedis(ctx, key, "", result, expireTime)
+		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
 	}
 
 	if !exit {
-		result, err = c.callbackFunc(ctx, key, subKey...)
+		fmt.Println("======================设置缓存", exit)
+		result, err = c.callbackFunc(ctx, key, subKeys...)
 		if err != nil {
 			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
 			return []byte{}, err
 		}
-		return c.SetDataToRedis(ctx, key, "", result, expireTime)
+		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
 	}
 
 	var resultStr string
-	if subKey != nil && len(subKey) > 0 {
-		resultStr, err = c.HGet(key, subKey[0])
+	if subKey != "" {
+		resultStr, err = c.HGet(key, subKey)
 	} else {
 		resultStr, err = c.Get(key)
 	}
 	if err != nil {
+		fmt.Println("======================设置缓存", err.Error())
 		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从redis中获取数据失败", "err": err.Error()})
-		result, err = c.callbackFunc(ctx, key, subKey...)
+		result, err = c.callbackFunc(ctx, key, subKeys...)
 		if err != nil {
 			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
 			return []byte{}, err
 		}
-		return c.SetDataToRedis(ctx, key, "", result, expireTime)
+		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
 	}
 
 	return []byte(resultStr), nil
 }
 
 // GetValueFromHashCache 从hash缓存中取数据
-func (c *Cache) GetValueFromHashCache(ctx context.Context, key, subKey string, expireTime int) ([]byte, error) {
-	result := make([]byte, 0)
-	exit, err := c.Exists(key)
-	if err != nil {
-		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "查询键失败", "err": err.Error()})
-		result, err = c.callbackFunc(ctx, key, subKey)
-		if err != nil {
-			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
-			return []byte{}, err
-		}
-		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
-	}
-
-	if !exit {
-		result, err = c.callbackFunc(ctx, key, subKey)
-		if err != nil {
-			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
-			return []byte{}, err
-		}
-		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
-	}
-
-	resultStr, err := c.HGet(key, subKey)
-	if err != nil {
-		logger.Error(ctx, "GetValueFromHashCache", logger.LogArgs{"msg": "从redis中获取数据失败", "err": err.Error()})
-		result, err = c.callbackFunc(ctx, key)
-		if err != nil {
-			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
-			return []byte{}, err
-		}
-		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
-	}
-
-	return []byte(resultStr), nil
-}
+//func (c *Cache) GetValueFromHashCache(ctx context.Context, key, subKey string, expireTime int) ([]byte, error) {
+//	result := make([]byte, 0)
+//	exit, err := c.Exists(key)
+//	if err != nil {
+//		logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "查询键失败", "err": err.Error()})
+//		result, err = c.callbackFunc(ctx, key, subKey)
+//		if err != nil {
+//			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
+//			return []byte{}, err
+//		}
+//		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
+//	}
+//
+//	if !exit {
+//		result, err = c.callbackFunc(ctx, key, subKey)
+//		if err != nil {
+//			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
+//			return []byte{}, err
+//		}
+//		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
+//	}
+//
+//	resultStr, err := c.HGet(key, subKey)
+//	if err != nil {
+//		logger.Error(ctx, "GetValueFromHashCache", logger.LogArgs{"msg": "从redis中获取数据失败", "err": err.Error()})
+//		result, err = c.callbackFunc(ctx, key)
+//		if err != nil {
+//			logger.Error(ctx, "GetValueFromCache", logger.LogArgs{"msg": "从mysql中获取数据失败", "err": err.Error()})
+//			return []byte{}, err
+//		}
+//		return c.SetDataToRedis(ctx, key, subKey, result, expireTime)
+//	}
+//
+//	return []byte(resultStr), nil
+//}
 
 func (c *Cache) Set(key string, value interface{}) error {
 	conn := c.redisPool.Get()
