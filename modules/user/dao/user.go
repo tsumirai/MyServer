@@ -12,7 +12,7 @@ type UserDao struct {
 	common.BaseDao
 }
 
-const UserInfoTable = "user_info"
+const UserTable = "user"
 
 func NewUserDao() *UserDao {
 	return &UserDao{}
@@ -24,7 +24,7 @@ func (d *UserDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model
 		return nil, fmt.Errorf("参数不能为空")
 	}
 
-	db := d.GetDB().Table(UserInfoTable)
+	db := d.GetDB().Table(UserTable)
 
 	err := db.Create(param).Error
 	if err != nil {
@@ -43,7 +43,7 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 	}
 
 	result := &model.UserInfo{}
-	db := d.GetDB().Table(UserInfoTable)
+	db := d.GetDB().Table(UserTable)
 	if param.ID != 0 {
 		db.Where("id = ?", param.ID)
 	}
@@ -87,7 +87,7 @@ func (d *UserDao) UpdateUserInfoByUID(ctx context.Context, userInfo *model.UserI
 		return nil, err
 	}
 
-	db := d.GetDB().Table(UserInfoTable)
+	db := d.GetDB().Table(UserTable)
 	err := db.Where("uid = ?", userInfo.UID).Updates(userInfo).Error
 	if err != nil {
 		logger.Error(ctx, "UpdateUserInfoByUID", logger.LogArgs{"err": err, "msg": "更新用户信息失败"})
