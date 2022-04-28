@@ -16,7 +16,7 @@ type ContentController struct {
 // CreateContent 创建内容
 func (c *ContentController) CreateContent(ctx *gin.Context) {
 	var param *dto.CreateContentReq
-	err := ctx.BindJSON(param)
+	err := ctx.BindJSON(&param)
 	if err != nil {
 		logger.Error(ctx, "CreateContent", logger.LogArgs{"err": err, "msg": "解析参数失败"})
 		c.EchoErrorStruct(ctx, common.ErrJSONUnmarshallFailed)
