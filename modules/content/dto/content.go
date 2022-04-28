@@ -9,4 +9,5 @@ type CreateContentReq struct {
 	VideoUrl         string   `json:"video_url"`          // 视频url
 	ContentType      int64    `json:"content_type"`       // 内容类型 0 图文  1  视频
 	ContentSpaceType int64    `json:"content_space_type"` // 内容所属空间类型 0：普通空间  1：隐私空间
+	LocCityID        int64    `json:"loc_city_id"`        // 定位城市id
 }
