@@ -30,7 +30,7 @@ func (s *ContentService) CreateContent(ctx *gin.Context, param *dto.CreateConten
 		return err
 	}
 
-	if param.AuthorUID == "" {
+	if param.AuthorUID == 0 {
 		err := fmt.Errorf("未找到用户")
 		logger.Error(ctx, "CreateContent", logger.LogArgs{"err": err})
 		return err

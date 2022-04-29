@@ -4,7 +4,7 @@ import "time"
 
 type UserInfo struct {
 	ID           int64     `gorm:"column:id" db:"id" json:"id" form:"id"`                                             //  自增id
-	UID          string    `gorm:"column:uid" db:"uid" json:"uid" form:"uid"`                                         //  用户uid
+	UID          int64     `gorm:"column:uid" db:"uid" json:"uid" form:"uid"`                                         //  用户uid
 	Phone        string    `gorm:"column:phone" db:"phone" json:"phone" form:"phone"`                                 //  用户电话号码
 	Password     string    `gorm:"column:password" db:"password" json:"password" form:"password"`                     //  用户密码
 	LoginType    int64     `gorm:"column:login_type" db:"login_type" json:"login_type" form:"login_type"`             //  登录方式

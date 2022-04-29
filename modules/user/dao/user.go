@@ -47,7 +47,7 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 		db.Where("id = ?", param.ID)
 	}
 
-	if param.UID != "" {
+	if param.UID != 0 {
 		db.Where("uid = ?", param.UID)
 	}
 
@@ -80,7 +80,7 @@ func (d *UserDao) UpdateUserInfoByUID(ctx context.Context, userInfo *model.UserI
 		return nil, err
 	}
 
-	if userInfo.UID == "" {
+	if userInfo.UID == 0 {
 		err := fmt.Errorf("UID不能为空")
 		logger.Error(ctx, "UpdateUserInfoByUID", logger.LogArgs{"err": err, "msg": "UID不能为空"})
 		return nil, err

@@ -46,7 +46,7 @@ func (s *UserService) CreateUser(ctx context.Context, param *model.UserInfo) (*m
 		return nil, err
 	}
 
-	uid := node.Generate().String()
+	uid := node.Generate().Int64()
 	param.UID = uid
 	param.RegisterTime = time.Now()
 
@@ -72,7 +72,7 @@ func (s *UserService) GetUserInfoByParam(ctx context.Context, param *model.UserI
 }
 
 // GetUserInfoByUID 根据UID查询用户信息
-func (s *UserService) GetUserInfoByUID(ctx context.Context, uid string) (*model.UserInfo, error) {
+func (s *UserService) GetUserInfoByUID(ctx context.Context, uid int64) (*model.UserInfo, error) {
 	cacheSvr := cache.NewCache()
 	cacheSvr.RegisterCallbackFunc(s.GetUserInfoByUIDCallback)
 

@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -21,7 +22,11 @@ func (s *UserService) GetUserInfoByUIDCallback(ctx context.Context, key string, 
 		return nil, err
 	}
 
-	uid := keys[1]
+	uid, err := strconv.ParseInt(keys[1], 10, 64)
+	if err != nil {
+		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "parse uid failed"})
+		return nil, err
+	}
 
 	userInfo, err := userDao.GetUserInfoByParam(ctx, &model.UserInfo{UID: uid})
 	if err != nil {

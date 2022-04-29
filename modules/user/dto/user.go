@@ -2,7 +2,7 @@ package dto
 
 type UserInfo struct {
 	ID           int64  `json:"id"`            // 自增id
-	UID          string `json:"uid"`           // 用户uid
+	UID          int64  `json:"uid"`           // 用户uid
 	Phone        string `json:"phone"`         // 用户电话
 	LoginType    int    `json:"login_type"`    // 用户登陆方式
 	Password     string `json:"password"`      // 用户密码
