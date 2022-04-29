@@ -15,10 +15,6 @@ type UserController struct {
 	*common.BaseController
 }
 
-func (u *UserController) Ping(ctx *gin.Context) {
-	u.EchoSuccess(ctx, "Pong")
-}
-
 // UserLogin 用户登录（未注册用户自动注册）
 func (u *UserController) UserLogin(ctx *gin.Context) {
 	var userData dto.UserInfo
