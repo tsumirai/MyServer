@@ -5,3 +5,5 @@ const (
 )
 
 const UserTable = "user"
+
+const UserTableNum = 10

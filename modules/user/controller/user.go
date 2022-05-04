@@ -30,14 +30,19 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 	result := &dto.UserInfo{}
 	needRegister := false
 	userService := service.NewUserService()
+	phoneService := service.NewUserPhoneService()
 
-	userInfo, err := userService.GetUserInfoByParam(ctx, &model.UserInfo{
-		Phone:     userData.Phone,
-		LoginType: int64(userData.LoginType),
-	})
-	if err != nil || userInfo == nil {
+	var userInfo *model.UserInfo
+	uid, err := phoneService.GetUIDByPhone(ctx, userData.Phone)
+	if err != nil || uid == 0 {
 		// 获得用户信息失败则认为无该用户，需要注册
 		needRegister = true
+	} else {
+		userInfo, err = userService.GetUserInfoByUID(ctx, uid)
+		if err != nil || userInfo == nil {
+			// 获得用户信息失败则认为无该用户，需要注册
+			needRegister = true
+		}
 	}
 
 	if needRegister {
@@ -82,7 +87,7 @@ func (u *UserController) GetUserInfoByUID(ctx *gin.Context) {
 		return
 	}
 
-	logger.Info(ctx, "GetUserInfoByUID", logger.LogArgs{"uid": userData.UID, "nickName": userData.NickName, "city": userData.City, "birtyDay": userData.Birthday, "sex": userData.Sex, "signature": userData.Signature, "photo": userData.ProfilePhoto})
+	logger.Info(ctx, "GetUserInfoByUID", logger.LogArgs{"uid": userData.UID, "nickName": userData.NickName, "city": userData.City, "birthDay": userData.Birthday, "sex": userData.Sex, "signature": userData.Signature, "photo": userData.ProfilePhoto})
 
 	userService := service.NewUserService()
 	result, err := userService.GetUserInfoByUID(ctx, userData.UID)

@@ -5,3 +5,5 @@ const (
 )
 
 const ContentTable = "content"
+
+const ContentTableNum = 10
