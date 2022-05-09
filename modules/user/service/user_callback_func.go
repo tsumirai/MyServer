@@ -12,19 +12,19 @@ import (
 )
 
 // GetUserInfoByUIDCallback 获得用户信息的回调函数
-func (s *UserService) GetUserInfoByUIDCallback(ctx context.Context, key string, subKey ...string) ([]byte, error) {
+func (s *userService) GetUserInfoByUIDCallback(ctx context.Context, key string, subKey ...string) ([]byte, error) {
 	userDao := dao.NewUserDao()
 
 	keys := strings.Split(key, ":")
-	if len(keys) != 2 {
+	if len(keys) != 3 {
 		err := fmt.Errorf("redisKey长度有误")
 		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": err.Error()})
 		return nil, err
 	}
 
-	uid, err := strconv.ParseInt(keys[1], 10, 64)
+	uid, err := strconv.ParseInt(keys[2], 10, 64)
 	if err != nil {
-		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "parse uid failed"})
+		logger.Error(ctx, "GetUserInfoByUID", logger.LogArgs{"err": err, "msg": "parse uid failed", "uid": keys[2]})
 		return nil, err
 	}
 

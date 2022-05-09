@@ -9,21 +9,22 @@ import (
 	"strconv"
 )
 
-type UserPhone struct {
+type userPhoneDao struct {
 	common.BaseDao
 }
 
-func NewUserPhoneDao() *UserPhone {
-	return &UserPhone{}
+func NewUserPhoneDao() *userPhoneDao {
+	return &userPhoneDao{}
 }
 
-func (d *UserPhone) getTableName(ctx context.Context, phone int64) string {
+func (d *userPhoneDao) getTableName(ctx context.Context, phone int64) string {
 	return consts.UserPhoneTable + "_" + strconv.FormatInt(phone%consts.UserPhoneTableNum, 10)
 }
 
 // CreateUserPhone 创建用户手机号数据
-func (d *UserPhone) CreateUserPhone(ctx context.Context, data *model.UserPhone) (*model.UserPhone, error) {
-	err := d.GetDB().Table(d.getTableName(ctx, data.UID)).Create(data).Error
+func (d *userPhoneDao) CreateUserPhone(ctx context.Context, data *model.UserPhone) (*model.UserPhone, error) {
+	err := d.GetDB().Table(d.getTableName(ctx, data.UID)).
+		Create(data).Error
 	if err != nil {
 		logger.Error(ctx, "CreateUserPhone", logger.LogArgs{"err": err})
 		return nil, err
@@ -32,7 +33,7 @@ func (d *UserPhone) CreateUserPhone(ctx context.Context, data *model.UserPhone) 
 }
 
 // GetUIDByPhone 根据手机号获得用户uid
-func (d *UserPhone) GetUIDByPhone(ctx context.Context, phone string) (int64, error) {
+func (d *userPhoneDao) GetUIDByPhone(ctx context.Context, phone string) (int64, error) {
 	phoneNum, err := strconv.ParseInt(phone, 10, 64)
 	if err != nil {
 		logger.Error(ctx, "GetUIDByPhone", logger.LogArgs{"err": err})
@@ -41,7 +42,10 @@ func (d *UserPhone) GetUIDByPhone(ctx context.Context, phone string) (int64, err
 
 	var uid int64
 
-	err = d.GetDB().Table(d.getTableName(ctx, phoneNum)).Select("uid").Where("phone = ?", phone).Find(&uid).Error
+	err = d.GetDB().Table(d.getTableName(ctx, phoneNum)).
+		Select("uid").
+		Where("phone = ?", phone).
+		Find(&uid).Error
 	if err != nil {
 		logger.Error(ctx, "GetUIDByPhone", logger.LogArgs{"err": err})
 		return 0, err

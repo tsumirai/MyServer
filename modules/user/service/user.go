@@ -16,16 +16,16 @@ import (
 	"time"
 )
 
-type UserService struct {
+type userService struct {
 	common.BaseService
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService() *userService {
+	return &userService{}
 }
 
 // CreateUser 创建新用户
-func (s *UserService) CreateUser(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+func (s *userService) CreateUser(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
 	userDao := dao.NewUserDao()
 	if param.Password == "" {
 		err := fmt.Errorf("用户密码不能为空")
@@ -60,7 +60,7 @@ func (s *UserService) CreateUser(ctx context.Context, param *model.UserInfo) (*m
 }
 
 // GetUserInfoByParam 获得用户信息
-func (s *UserService) GetUserInfoByParam(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+func (s *userService) GetUserInfoByParam(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
 	userDao := dao.NewUserDao()
 	userInfo, err := userDao.GetUserInfoByParam(ctx, param)
 	if err != nil {
@@ -72,7 +72,7 @@ func (s *UserService) GetUserInfoByParam(ctx context.Context, param *model.UserI
 }
 
 // GetUserInfoByUID 根据UID查询用户信息
-func (s *UserService) GetUserInfoByUID(ctx context.Context, uid int64) (*model.UserInfo, error) {
+func (s *userService) GetUserInfoByUID(ctx context.Context, uid int64) (*model.UserInfo, error) {
 	cacheSvr := cache.NewCache()
 	cacheSvr.RegisterCallbackFunc(s.GetUserInfoByUIDCallback)
 
@@ -92,7 +92,7 @@ func (s *UserService) GetUserInfoByUID(ctx context.Context, uid int64) (*model.U
 }
 
 // UpdateUserInfoByUID 根据UID更新用户信息
-func (s *UserService) UpdateUserInfoByUID(ctx context.Context, userInfo *dto.UserInfo) (*model.UserInfo, error) {
+func (s *userService) UpdateUserInfoByUID(ctx context.Context, userInfo *dto.UserInfo) (*model.UserInfo, error) {
 	userDao := dao.NewUserDao()
 
 	birthDay, err := time.Parse(commonConsts.TimeFormatData, userInfo.Birthday)
@@ -139,7 +139,7 @@ func (s *UserService) UpdateUserInfoByUID(ctx context.Context, userInfo *dto.Use
 }
 
 // ConvertUserModelData 转换用户数据
-func (s *UserService) ConvertUserModelData(ctx context.Context, userDtoData *dto.UserInfo) (*model.UserInfo, error) {
+func (s *userService) ConvertUserModelData(ctx context.Context, userDtoData *dto.UserInfo) (*model.UserInfo, error) {
 	birthDay, err := time.Parse(commonConsts.TimeFormatData, userDtoData.Birthday)
 	if err != nil {
 		logger.Error(ctx, "ConvertUserModelData", logger.LogArgs{"msg": "用户数据转换失败", "err": err.Error()})

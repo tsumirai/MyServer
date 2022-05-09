@@ -6,5 +6,8 @@ const (
 )
 
 const (
+	OneMinute  = 1 * 60
 	FiveMinute = 5 * 60
+	TenMinute  = 10 * 60
+	OneHour    = 60 * 60
 )

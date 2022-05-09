@@ -7,7 +7,7 @@ import (
 )
 
 // DelUserInfoRedisByUID 根据uid删除用户缓存
-func (d *UserDao) DelUserInfoRedisByUID(ctx context.Context, uid int64) error {
+func (d *userDao) DelUserInfoRedisByUID(ctx context.Context, uid int64) error {
 	cacheSvr := cache.NewCache()
 	exit, err := cacheSvr.Exists(cache.GetUserInfoRedisKey(uid))
 	if err != nil {

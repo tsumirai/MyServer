@@ -11,12 +11,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserController struct {
+type userController struct {
 	*common.BaseController
 }
 
+func NewUserController() *userController {
+	return &userController{}
+}
+
 // UserLogin 用户登录（未注册用户自动注册）
-func (u *UserController) UserLogin(ctx *gin.Context) {
+func (u *userController) UserLogin(ctx *gin.Context) {
 	var userData dto.UserInfo
 	err := ctx.BindJSON(&userData)
 	if err != nil {
@@ -78,7 +82,7 @@ func (u *UserController) UserLogin(ctx *gin.Context) {
 }
 
 // GetUserInfoByUID 获得用户信息
-func (u *UserController) GetUserInfoByUID(ctx *gin.Context) {
+func (u *userController) GetUserInfoByUID(ctx *gin.Context) {
 	var userData dto.UserInfo
 	err := ctx.BindJSON(&userData)
 	if err != nil {
@@ -102,7 +106,7 @@ func (u *UserController) GetUserInfoByUID(ctx *gin.Context) {
 }
 
 // UpdateUserInfo 更新用户信息
-func (u *UserController) UpdateUserInfo(ctx *gin.Context) {
+func (u *userController) UpdateUserInfo(ctx *gin.Context) {
 	var userData dto.UserInfo
 	err := ctx.BindJSON(&userData)
 	if err != nil {
@@ -111,7 +115,7 @@ func (u *UserController) UpdateUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	logger.Info(ctx, "GetUserInfo", logger.LogArgs{"uid": userData.UID, "nickName": userData.NickName, "city": userData.City, "birtyDay": userData.Birthday, "sex": userData.Sex, "signature": userData.Signature, "photo": userData.ProfilePhoto})
+	logger.Info(ctx, "GetUserInfo", logger.LogArgs{"uid": userData.UID, "nickName": userData.NickName, "city": userData.City, "birthDay": userData.Birthday, "sex": userData.Sex, "signature": userData.Signature, "photo": userData.ProfilePhoto})
 
 	userService := service.NewUserService()
 	result, err := userService.UpdateUserInfoByUID(ctx, &userData)

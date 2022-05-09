@@ -7,17 +7,17 @@ import (
 	"context"
 )
 
-type UserPhoneService struct {
+type userPhoneService struct {
 	common.BaseService
 }
 
-func NewUserPhoneService() *UserPhoneService {
-	return &UserPhoneService{}
+func NewUserPhoneService() *userPhoneService {
+	return &userPhoneService{}
 }
 
 // GetUIDByPhone 根据手机号获得UID
-func (s *UserPhoneService) GetUIDByPhone(ctx context.Context, phone string) (int64, error) {
-	phoneDao := dao.NewUserPhone()
+func (s *userPhoneService) GetUIDByPhone(ctx context.Context, phone string) (int64, error) {
+	phoneDao := dao.NewUserPhoneDao()
 	uid, err := phoneDao.GetUIDByPhone(ctx, phone)
 	if err != nil {
 		logger.Error(ctx, "GetUIDByPhone", logger.LogArgs{"err": err})

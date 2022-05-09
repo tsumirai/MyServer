@@ -10,20 +10,20 @@ import (
 	"strconv"
 )
 
-type UserDao struct {
+type userDao struct {
 	common.BaseDao
 }
 
-func NewUserDao() *UserDao {
-	return &UserDao{}
+func NewUserDao() *userDao {
+	return &userDao{}
 }
 
-func (d *UserDao) getTableName(ctx context.Context, uid int64) string {
+func (d *userDao) getTableName(ctx context.Context, uid int64) string {
 	return consts.UserTable + "_" + strconv.FormatInt(uid%consts.UserTableNum, 10)
 }
 
 // CreateUser 创建用户
-func (d *UserDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+func (d *userDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
 	if param == nil {
 		return nil, fmt.Errorf("参数不能为空")
 	}
@@ -33,7 +33,8 @@ func (d *UserDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model
 	}
 
 	tx := d.GetDB().Begin()
-	err := tx.Table(d.getTableName(ctx, param.UID)).Create(param).Error
+	err := tx.Table(d.getTableName(ctx, param.UID)).
+		Create(param).Error
 	if err != nil {
 		logger.Error(ctx, "CreateUser", logger.LogArgs{"err": err, "msg": "创建用户失败"})
 		tx.Rollback()
@@ -41,10 +42,11 @@ func (d *UserDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model
 	}
 
 	phoneDao := NewUserPhoneDao()
-	err = tx.Table(phoneDao.getTableName(ctx, param.UID)).Create(&model.UserPhone{
-		Phone: param.Phone,
-		UID:   param.UID,
-	}).Error
+	err = tx.Table(phoneDao.getTableName(ctx, param.UID)).
+		Create(&model.UserPhone{
+			Phone: param.Phone,
+			UID:   param.UID,
+		}).Error
 	if err != nil {
 		logger.Error(ctx, "CreateUser", logger.LogArgs{"err": err, "msg": "创建用户失败"})
 		tx.Rollback()
@@ -57,7 +59,7 @@ func (d *UserDao) CreateUser(ctx context.Context, param *model.UserInfo) (*model
 }
 
 // GetUserInfoByParam 根据参数获得用户信息
-func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
+func (d *userDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo) (*model.UserInfo, error) {
 	if param == nil {
 		return nil, fmt.Errorf("参数不能为空")
 	}
@@ -94,7 +96,7 @@ func (d *UserDao) GetUserInfoByParam(ctx context.Context, param *model.UserInfo)
 }
 
 // UpdateUserInfoByUID 根据uid更新用户信息
-func (d *UserDao) UpdateUserInfoByUID(ctx context.Context, userInfo *model.UserInfo) (*model.UserInfo, error) {
+func (d *userDao) UpdateUserInfoByUID(ctx context.Context, userInfo *model.UserInfo) (*model.UserInfo, error) {
 	if userInfo == nil {
 		err := fmt.Errorf("参数不能为空")
 		logger.Error(ctx, "UpdateUserInfoByUID", logger.LogArgs{"err": err, "msg": "参数不能为空"})
