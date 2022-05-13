@@ -34,3 +34,8 @@ const (
 	ContentPermissionFriend = 1 // 好友可见
 	ContentPermissionSelf   = 2 // 自己可见
 )
+
+const (
+	ContentCommonSpace = 0 // 普通空间
+	ContentSecretSpace = 1 // 隐私空间
+)

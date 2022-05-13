@@ -17,6 +17,11 @@ type GetCommentByContentIDReq struct {
 	PageSize  int   // 每页的数量
 }
 
+// GetCommentContByContentIDReq 获得内容下的评论数量
+type GetCommentContByContentIDReq struct {
+	ContentID int64 // 内容的id
+}
+
 // CommentRes 评论的返回结构体
 type CommentRes struct {
 	ID              int64     `json:"id"`                //  评论id

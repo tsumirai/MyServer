@@ -18,6 +18,7 @@ func (d *contentDao) UpdateContentCache(ctx context.Context, content *model.Cont
 		return err
 	}
 
+	// 键不存在认为不需要更新缓存，直接打印warn日志，返回nil
 	if !exit {
 		logger.Warn(ctx, "UpdateContentCache", logger.LogArgs{"msg": "键不存在", "err": err})
 		return nil

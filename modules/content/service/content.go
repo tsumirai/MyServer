@@ -9,6 +9,7 @@ import (
 	"MyServer/modules/content/dao"
 	"MyServer/modules/content/dto"
 	"MyServer/modules/content/model"
+	"MyServer/util"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -182,14 +183,40 @@ func (s *contentService) SetContentPermission(ctx context.Context, contentID, au
 	}
 
 	// 修改缓存
-	newContent, err := contentDao.GetContentByID(ctx, contentID, authorUID)
+	err = s.updateContentCache(ctx, contentID, authorUID)
 	if err != nil {
-		logger.Error(ctx, "SetContentPermission", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID, "permission": permission})
-	} else {
-		err = contentDao.UpdateContentCache(ctx, newContent)
-		if err != nil {
-			logger.Error(ctx, "SetContentPermission", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID, "permission": permission})
-		}
+		logger.Error(ctx, "SetContentPermission", logger.LogArgs{"err": err, "msg": "更新内容缓存失败", "contentID": contentID, "authorUID": authorUID, "permission": permission})
+	}
+
+	return nil
+}
+
+// SetContentSpace 修改内容所属空间
+func (s *contentService) SetContentSpace(ctx context.Context, contentID, authorUID int64, space int) error {
+	var err error
+	if contentID <= 0 || authorUID <= 0 {
+		err = fmt.Errorf("参数错误")
+		logger.Error(ctx, "SetContentSpace", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID})
+		return err
+	}
+
+	if space != consts.ContentCommonSpace && space != consts.ContentSecretSpace {
+		err = fmt.Errorf("参数错误")
+		logger.Error(ctx, "SetContentSpace", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID, "space": space})
+		return err
+	}
+
+	contentDao := dao.NewContentDao()
+	err = contentDao.SetContentSpace(ctx, contentID, authorUID, space)
+	if err != nil {
+		logger.Error(ctx, "SetContentSpace", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID, "space": space})
+		return err
+	}
+
+	// 修改缓存
+	err = s.updateContentCache(ctx, contentID, authorUID)
+	if err != nil {
+		logger.Error(ctx, "SetContentSpace", logger.LogArgs{"err": err, "msg": "更新内容缓存失败", "contentID": contentID, "authorUID": authorUID, "space": space})
 	}
 
 	return nil
@@ -228,10 +255,8 @@ func (s *contentService) getContentIDsByAuthorUID(ctx context.Context, authorUID
 	}
 
 	// 获得内容的具体数据
-	contentID := make([]string, 0, len(tempResult))
-	for _, v := range tempResult {
-		contentID = append(contentID, strconv.FormatInt(v, 64))
-	}
+	contentID := util.ConvertInt64SliceToStringSlice(tempResult)
+
 	cacheSvr.RegisterMultiCallbackFunc(s.getContentDataByIDsCallback)
 	contentByteData, err := cacheSvr.GetValuesFromHashCache(ctx, cache.GetContentDataByIDsRedisKey(authorUID), commonConsts.FiveMinute, contentID...)
 	if err != nil {
@@ -239,6 +264,7 @@ func (s *contentService) getContentIDsByAuthorUID(ctx context.Context, authorUID
 		return result, err
 	}
 
+	// 将数据转为输出给前端的格式
 	for _, v := range contentByteData {
 		var tempContent *model.Content
 		err = json.Unmarshal(v, &tempContent)
@@ -308,4 +334,22 @@ func (s *contentService) convertToContentDto(ctx context.Context, param *model.C
 	imageUrls := strings.Split(param.ImageUrls, ";")
 	result.ImageUrls = append(result.ImageUrls, imageUrls...)
 	return result
+}
+
+// UpdateContentCache 更新内容缓存
+func (s *contentService) updateContentCache(ctx context.Context, contentID, authorUID int64) error {
+	contentDao := dao.NewContentDao()
+	newContent, err := contentDao.GetContentByID(ctx, contentID, authorUID)
+	if err != nil {
+		logger.Error(ctx, "SetContentPermission", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID})
+		return err
+	}
+
+	err = contentDao.UpdateContentCache(ctx, newContent)
+	if err != nil {
+		logger.Error(ctx, "SetContentPermission", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID})
+		return err
+	}
+
+	return nil
 }

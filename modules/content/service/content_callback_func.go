@@ -3,6 +3,7 @@ package service
 import (
 	"MyServer/middleware/logger"
 	"MyServer/modules/content/dao"
+	"MyServer/util"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -32,14 +33,10 @@ func (s *contentService) getContentDataByIDsCallback(ctx context.Context, key st
 		return result, nil
 	}
 
-	contentIDs := make([]int64, 0, len(subKey))
-	for _, v := range subKey {
-		contentID, err := strconv.ParseInt(v, 10, 64)
-		if err != nil {
-			logger.Error(ctx, "getContentDataByIDsCallback", logger.LogArgs{"err": err, "msg": "解析contentID失败"})
-			continue
-		}
-		contentIDs = append(contentIDs, contentID)
+	contentIDs, err := util.ConvertStringSliceToInt64Slice(ctx, subKey)
+	if err != nil {
+		logger.Error(ctx, "getContentDataByIDsCallback", logger.LogArgs{"err": err, "msg": "解析contentID失败"})
+		return result, err
 	}
 
 	contentData, err := contentDao.GetContentsByIDs(ctx, contentIDs, authorUID)

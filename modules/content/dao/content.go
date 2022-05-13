@@ -109,3 +109,15 @@ func (d *contentDao) SetContentPermission(ctx context.Context, contentID, author
 	}
 	return nil
 }
+
+// SetContentSpace 设置内容的所属空间
+func (d *contentDao) SetContentSpace(ctx context.Context, contentID, authorUID int64, space int) error {
+	err := d.GetDB().Table(d.getTableName(authorUID)).
+		Where("id = ?", contentID).
+		Update("content_space_type", space).Error
+	if err != nil {
+		logger.Error(ctx, "SetContentSpace", logger.LogArgs{"err": err, "msg": "设置内容所属空间失败"})
+		return err
+	}
+	return nil
+}

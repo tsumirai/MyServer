@@ -30,11 +30,13 @@ func InitRouter(R *gin.Engine) {
 	R.POST("/content/setContentSpace", contentController.NewContentController().SetContentSpace)           // 设置内容的空间 0：普通空间  1：隐私空间
 
 	/*--------------------- comment ----------------*/
-	R.POST("/comment/createComment", commentController.NewCommentController().CreateComment)                   // 创建评论
-	R.POST("/comment/getCommentsByContentID", commentController.NewCommentController().GetCommentsByContentID) // 获得内容下的评论
+	R.POST("/comment/createComment", commentController.NewCommentController().CreateComment)                           // 创建评论
+	R.POST("/comment/getCommentsByContentID", commentController.NewCommentController().GetCommentsByContentID)         // 获得内容下的评论
+	R.POST("/comment/getCommentCountByContentID", commentController.NewCommentController().GetCommentCountByContentID) // 获得内容下的评论数量
 
 	/*-------------------- message -----------------*/
-	R.POST("/message/getMessageList", messageController.NewMessageController().GetMessageList) // 获得消息列表
+	R.POST("/message/getMessageListByUID", messageController.NewMessageController().GetMessageListByUID) // 获得消息列表
+	R.POST("/message/updateMessageStatus", messageController.NewMessageController().UpdateMessageStatus) // 修改消息状态
 
 	/*-------------------- interact ---------------*/
 	R.POST("/interact/like", interactController.NewInteractController().Like)             // 点赞、取消点赞，收藏、取消收藏

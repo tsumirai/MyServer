@@ -23,6 +23,11 @@ var (
 
 	/*-------------- Comment -----------------*/
 
-	ErrCreateCommentFailed = &BaseError{-102001, "创建评论失败"}
-	ErrGetCommentFailed    = &BaseError{-102002, "获得评论失败"}
+	ErrCreateCommentFailed   = &BaseError{-102001, "创建评论失败"}
+	ErrGetCommentFailed      = &BaseError{-102002, "获得评论失败"}
+	ErrGetCommentCountFailed = &BaseError{-102003, "获得评论数量失败"}
+
+	/*-------------- Message -----------------*/
+
+	ErrGetMessageFailed = &BaseError{-103001, "获得消息列表失败"}
 )

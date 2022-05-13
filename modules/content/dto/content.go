@@ -45,3 +45,10 @@ type ContentPermissionReq struct {
 	AuthorUID  int64 `json:"author_uid"` // 用户的uid
 	Permission int   `json:"permission"` // 内容的权限
 }
+
+// ContentSpaceReq 修改内容空间请求
+type ContentSpaceReq struct {
+	ID        int64 `json:"id"`         // 内容id
+	AuthorUID int64 `json:"author_uid"` // 用户的uid
+	Space     int   `json:"space"`      // 内容的空间
+}

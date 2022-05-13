@@ -57,3 +57,24 @@ func (c *commentController) GetCommentsByContentID(ctx *gin.Context) {
 
 	c.EchoSuccess(ctx, comments)
 }
+
+// GetCommentCountByContentID 获得内容下所有的评论数量
+func (c *commentController) GetCommentCountByContentID(ctx *gin.Context) {
+	var param *dto.GetCommentContByContentIDReq
+	err := ctx.BindJSON(&param)
+	if err != nil {
+		logger.Error(ctx, "GetCommentCountByContentID", logger.LogArgs{"err": err, "msg": "参数解析失败"})
+		c.EchoErrorStruct(ctx, common.ErrJSONUnmarshallFailed)
+		return
+	}
+
+	commentSvr := service.NewCommentService()
+	commentCount, err := commentSvr.GetCommentCountByContentID(ctx, param.ContentID)
+	if err != nil {
+		logger.Error(ctx, "GetCommentCountByContentID", logger.LogArgs{"err": err, "msg": "获得评论数量失败"})
+		c.EchoErrorStruct(ctx, common.ErrGetCommentCountFailed)
+		return
+	}
+
+	c.EchoSuccess(ctx, commentCount)
+}

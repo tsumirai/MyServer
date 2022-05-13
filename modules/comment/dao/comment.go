@@ -78,3 +78,16 @@ func (d *commentDao) GetCommentsByCommentIDs(ctx context.Context, contentID int6
 	}
 	return result, nil
 }
+
+// GetCommentCountByContentID 获得内容下的评论数量
+func (d *commentDao) GetCommentCountByContentID(ctx context.Context, contentID int64) (int64, error) {
+	result := int64(0)
+	err := d.GetDB().Table(d.getTableName(contentID)).
+		Where("id = ?", contentID).
+		Count(&result).Error
+	if err != nil {
+		logger.Error(ctx, "GetCommentCountByContentID", logger.LogArgs{"err": err, "msg": "获取评论数量失败"})
+		return result, err
+	}
+	return result, nil
+}

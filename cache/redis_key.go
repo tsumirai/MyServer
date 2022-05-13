@@ -19,10 +19,20 @@ func GetContentIDsByAuthorUID(authorUID int64, pageNum, pageSize int) string {
 
 // GetCommentDataByIDsRedisKey 根据内容id和评论id获得评论数据，hash表结构，subKey为commentID
 func GetCommentDataByIDsRedisKey(contentID int64) string {
-	return fmt.Sprintf("comment_data_by_id:uid:%v", contentID)
+	return fmt.Sprintf("comment_data_by_id:id:%v", contentID)
 }
 
 // GetCommentIDByContentID 根据内容id获得评论id
 func GetCommentIDByContentID(contentID int64, pageNum, pageSize int) string {
-	return fmt.Sprintf("comments_by_contentID:contentID:%v:pageNum:$%v:pageSize:%v", contentID, pageNum, pageSize)
+	return fmt.Sprintf("comments_by_contentID:contentID:%v:pageNum:%v:pageSize:%v", contentID, pageNum, pageSize)
+}
+
+// GetMessageIDsByUID 根据接收者的uid获得消息列表id
+func GetMessageIDsByUID(uid int64, pageNum, pageSize int) string {
+	return fmt.Sprintf("message_by_uid:uid:%v:pageNum:%v:pageSize:%v", uid, pageNum, pageSize)
+}
+
+// GetMessageDataByIDsRedisKey 根据消息id获得消息的数据
+func GetMessageDataByIDsRedisKey(receiverUID int64) string {
+	return fmt.Sprintf("message_data_by_uid:uid:%v", receiverUID)
 }

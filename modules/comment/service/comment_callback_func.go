@@ -3,6 +3,7 @@ package service
 import (
 	"MyServer/middleware/logger"
 	"MyServer/modules/comment/dao"
+	"MyServer/util"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -32,14 +33,10 @@ func (s *commentService) GetCommentDataByIDCallback(ctx context.Context, key str
 		return result, nil
 	}
 
-	commentIDs := make([]int64, 0, len(subKeys))
-	for _, v := range subKeys {
-		commentID, err := strconv.ParseInt(v, 10, 64)
-		if err != nil {
-			logger.Error(ctx, "GetCommentDataByIDCallback", logger.LogArgs{"err": err, "msg": "parse commentID failed", "commentID": v})
-			continue
-		}
-		commentIDs = append(commentIDs, commentID)
+	commentIDs, err := util.ConvertStringSliceToInt64Slice(ctx, subKeys)
+	if err != nil {
+		logger.Error(ctx, "GetCommentDataByIDCallback", logger.LogArgs{"err": err, "msg": "parse commentID failed"})
+		return nil, err
 	}
 
 	commentData, err := commentDao.GetCommentsByCommentIDs(ctx, contentID, commentIDs)

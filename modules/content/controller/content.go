@@ -131,5 +131,16 @@ func (c *contentController) SetContentPermission(ctx *gin.Context) {
 
 // SetContentSpace 设置内容的空间 0：普通空间  1：隐私空间
 func (c *contentController) SetContentSpace(ctx *gin.Context) {
+	var param *dto.ContentSpaceReq
+	err := ctx.BindJSON(&param)
+	if err != nil {
+		logger.Error(ctx, "SetContentSpace", logger.LogArgs{"err": err, "msg": "参数解析失败"})
+		c.EchoErrorStruct(ctx, common.ErrJSONUnmarshallFailed)
+		return
+	}
+
+	contentSvr := service.NewContentService()
+	contentSvr.SetContentSpace(ctx, param.ID, param.AuthorUID, param.Space)
+
 	c.EchoSuccess(ctx, nil)
 }

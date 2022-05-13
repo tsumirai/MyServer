@@ -9,10 +9,10 @@ import (
 	"MyServer/modules/comment/dao"
 	"MyServer/modules/comment/dto"
 	"MyServer/modules/comment/model"
+	"MyServer/util"
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -32,6 +32,7 @@ func (s *commentService) CreateComment(ctx context.Context, param *dto.CreateCom
 		return err
 	}
 
+	// 评论格式化
 	param.Comment = strings.TrimSpace(param.Comment)
 	if param.Comment == "" {
 		err := fmt.Errorf("内容不能为空")
@@ -39,6 +40,7 @@ func (s *commentService) CreateComment(ctx context.Context, param *dto.CreateCom
 		return err
 	}
 
+	// 检查评论长度
 	if len([]rune(param.Comment)) > consts.CommentLengthLimit {
 		err := fmt.Errorf("评论太长")
 		logger.Error(ctx, "CreateComment", logger.LogArgs{"err": err, "msg": "评论太长"})
@@ -80,6 +82,7 @@ func (s *commentService) GetCommentsByContentID(ctx context.Context, contentID i
 		pageSize = consts.DefaultCommentPageSize
 	}
 
+	// 获得内容下的评论id列表
 	cacheSvr := cache.NewCache()
 	cacheSvr.RegisterCallbackFunc(s.GetCommentIDByContentIDCallback)
 
@@ -96,10 +99,9 @@ func (s *commentService) GetCommentsByContentID(ctx context.Context, contentID i
 		return result, err
 	}
 
-	commentIDStr := make([]string, 0, len(commentID))
-	for _, v := range commentID {
-		commentIDStr = append(commentIDStr, strconv.FormatInt(v, 64))
-	}
+	commentIDStr := util.ConvertInt64SliceToStringSlice(commentID)
+
+	// 根据评论id列表获得评论内容
 	cacheSvr.RegisterMultiCallbackFunc(s.GetCommentDataByIDCallback)
 	commentByte, err := cacheSvr.GetValuesFromHashCache(ctx, cache.GetCommentDataByIDsRedisKey(contentID), commonConsts.FiveMinute, commentIDStr...)
 	if err != nil {
@@ -116,6 +118,25 @@ func (s *commentService) GetCommentsByContentID(ctx context.Context, contentID i
 		}
 
 		result = append(result, s.convertCommentToDto(ctx, comment))
+	}
+
+	return result, nil
+}
+
+// GetCommentCountByContentID 获得内容下所有评论的数量
+func (s *commentService) GetCommentCountByContentID(ctx context.Context, contentID int64) (int64, error) {
+	var err error
+	if contentID <= 0 {
+		err = fmt.Errorf("参数错误")
+		logger.Error(ctx, "GetCommentCountByContentID", logger.LogArgs{"err": err, "contentID": contentID})
+		return 0, err
+	}
+
+	commentDao := dao.NewCommentDao()
+	result, err := commentDao.GetCommentCountByContentID(ctx, contentID)
+	if err != nil {
+		logger.Error(ctx, "GetCommentCountByContentID", logger.LogArgs{"err": err, "cotentID": contentID})
+		return 0, err
 	}
 
 	return result, nil
