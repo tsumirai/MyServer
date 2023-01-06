@@ -2,6 +2,13 @@ package dto
 
 import "time"
 
+// Feed请求
+type FeedReq struct {
+	PageNum  int `json:"page_num"`
+	PageSize int `json:"page_size"`
+	CityID   int `json:"city_id"`
+}
+
 type ContentRes struct {
 	ID               int64     `json:"id"`                 // 内容id
 	Title            string    `json:"title"`              // 标题

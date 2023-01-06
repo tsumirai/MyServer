@@ -20,6 +20,7 @@ var (
 	ErrCreateContentFailed        = &BaseError{-101001, "创建内容失败"}
 	ErrGetContentFailed           = &BaseError{-101002, "获得内容数据失败"}
 	ErrSetContentPermissionFailed = &BaseError{-101003, "设置内容权限失败"}
+	ErrGetFeedFailed              = &BaseError{-101004, "获得Feed数据失败"}
 
 	/*-------------- Comment -----------------*/
 

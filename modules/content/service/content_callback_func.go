@@ -11,21 +11,21 @@ import (
 	"strings"
 )
 
-// getContentDataByIDsCallback 根据authorUID和contentID获得内容数据
-func (s *contentService) getContentDataByIDsCallback(ctx context.Context, key string, subKey ...string) (map[string][]byte, error) {
+// getContentDataByIDsAndAuthorUIDCallback 根据authorUID和contentID获得内容数据
+func (s *contentService) getContentDataByIDsAndAuthorUIDCallback(ctx context.Context, key string, subKey ...string) (map[string][]byte, error) {
 	contentDao := dao.NewContentDao()
 	result := make(map[string][]byte)
 
 	keys := strings.Split(key, ":")
 	if len(keys) != 3 {
 		err := fmt.Errorf("redisKey长度有误")
-		logger.Error(ctx, "getContentDataByIDsCallback", logger.LogArgs{"err": err, "msg": err.Error()})
+		logger.Error(ctx, "getContentDataByIDsAndAuthorUIDCallback", logger.LogArgs{"err": err, "msg": err.Error()})
 		return result, err
 	}
 
 	authorUID, err := strconv.ParseInt(keys[2], 10, 64)
 	if err != nil {
-		logger.Error(ctx, "getContentDataByIDsCallback", logger.LogArgs{"err": err, "msg": "parse uid failed", "uid": keys[2]})
+		logger.Error(ctx, "getContentDataByIDsAndAuthorUIDCallback", logger.LogArgs{"err": err, "msg": "parse uid failed", "uid": keys[2]})
 		return result, err
 	}
 
@@ -35,20 +35,20 @@ func (s *contentService) getContentDataByIDsCallback(ctx context.Context, key st
 
 	contentIDs, err := util.ConvertStringSliceToInt64Slice(ctx, subKey)
 	if err != nil {
-		logger.Error(ctx, "getContentDataByIDsCallback", logger.LogArgs{"err": err, "msg": "解析contentID失败"})
+		logger.Error(ctx, "getContentDataByIDsAndAuthorUIDCallback", logger.LogArgs{"err": err, "msg": "解析contentID失败"})
 		return result, err
 	}
 
-	contentData, err := contentDao.GetContentsByIDs(ctx, contentIDs, authorUID)
+	contentData, err := contentDao.GetContentsByIDsAndAuthorUID(ctx, contentIDs, authorUID)
 	if err != nil {
-		logger.Error(ctx, "getContentDataByIDsCallback", logger.LogArgs{"err": err, "msg": "查询用户信息失败", "ids": contentIDs, "uid": authorUID})
+		logger.Error(ctx, "getContentDataByIDsAndAuthorUIDCallback", logger.LogArgs{"err": err, "msg": "查询用户信息失败", "ids": contentIDs, "uid": authorUID})
 		return result, err
 	}
 
 	for _, v := range contentData {
 		jsonData, err := json.Marshal(v)
 		if err != nil {
-			logger.Error(ctx, "getContentDataByIDsCallback", logger.LogArgs{"err": err, "msg": "json序列化失败", "ids": contentIDs, "uid": authorUID})
+			logger.Error(ctx, "getContentDataByIDsAndAuthorUIDCallback", logger.LogArgs{"err": err, "msg": "json序列化失败", "ids": contentIDs, "uid": authorUID})
 			return result, err
 		}
 		result[strconv.FormatInt(v.ID, 64)] = jsonData

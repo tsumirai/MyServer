@@ -82,7 +82,7 @@ func (s *contentService) CreateContent(ctx context.Context, param *dto.CreateCon
 // GetContentByID 根据内容id获得内容数据
 func (s *contentService) GetContentByID(ctx context.Context, ID, authorUID int64) (*dto.ContentRes, error) {
 	cacheSvr := cache.NewCache()
-	cacheSvr.RegisterMultiCallbackFunc(s.getContentDataByIDsCallback)
+	cacheSvr.RegisterMultiCallbackFunc(s.getContentDataByIDsAndAuthorUIDCallback)
 
 	var contentData *model.Content
 	contentByteData, err := cacheSvr.GetValuesFromHashCache(ctx, cache.GetContentDataByIDsRedisKey(authorUID), commonConsts.FiveMinute, strconv.FormatInt(ID, 64))
@@ -222,11 +222,50 @@ func (s *contentService) SetContentSpace(ctx context.Context, contentID, authorU
 	return nil
 }
 
+// Feed流接口
+func (s *contentService) Feed(ctx context.Context, cityID, pageNum, pageSize int) {
+	if pageNum <= 0 {
+		// 默认为页码为1
+		pageNum = 1
+	}
+
+	if pageSize <= 0 {
+		// 默认每页数量为10
+		pageSize = 10
+	}
+
+}
+
 /*=========================================================================================*/
 // setContentStatus 设置内容的状态
 func (s *contentService) setContentStatus(ctx context.Context, contentID, authorUID int64, contentStatus int) error {
 	contentDao := dao.NewContentDao()
 	return contentDao.SetContentStatus(ctx, contentID, authorUID, contentStatus)
+}
+
+// getContentDataByIDs 根据内容ID批量获得内容数据
+func (s *contentService) getContentDataByIDs(ctx context.Context, contentIDs []int64) {
+	cacheSvr := cache.NewCache()
+	// 获得内容的具体数据
+	contentID := util.ConvertInt64SliceToStringSlice(contentIDs)
+
+	cacheSvr.RegisterMultiCallbackFunc(s.getContentDataByIDsAndAuthorUIDCallback)
+	contentByteData, err := cacheSvr.GetValuesFromHashCache(ctx, cache.GetContentDataByIDsRedisKey(authorUID), commonConsts.FiveMinute, contentID...)
+	if err != nil {
+		logger.Error(ctx, "getContentIDsByAuthorUID", logger.LogArgs{"err": err, "msg": "获取内容数据失败"})
+		return result, err
+	}
+
+	// 将数据转为输出给前端的格式
+	for _, v := range contentByteData {
+		var tempContent *model.Content
+		err = json.Unmarshal(v, &tempContent)
+		if err != nil {
+			logger.Error(ctx, "getContentIDsByAuthorUID", logger.LogArgs{"err": err, "msg": "反序列化内容列表失败"})
+			return result, err
+		}
+		result = append(result, s.convertToContentDto(ctx, tempContent))
+	}
 }
 
 // getContentIDsByAuthorUID 根据作者UID获得内容列表
@@ -257,7 +296,7 @@ func (s *contentService) getContentIDsByAuthorUID(ctx context.Context, authorUID
 	// 获得内容的具体数据
 	contentID := util.ConvertInt64SliceToStringSlice(tempResult)
 
-	cacheSvr.RegisterMultiCallbackFunc(s.getContentDataByIDsCallback)
+	cacheSvr.RegisterMultiCallbackFunc(s.getContentDataByIDsAndAuthorUIDCallback)
 	contentByteData, err := cacheSvr.GetValuesFromHashCache(ctx, cache.GetContentDataByIDsRedisKey(authorUID), commonConsts.FiveMinute, contentID...)
 	if err != nil {
 		logger.Error(ctx, "getContentIDsByAuthorUID", logger.LogArgs{"err": err, "msg": "获取内容数据失败"})
@@ -339,7 +378,7 @@ func (s *contentService) convertToContentDto(ctx context.Context, param *model.C
 // UpdateContentCache 更新内容缓存
 func (s *contentService) updateContentCache(ctx context.Context, contentID, authorUID int64) error {
 	contentDao := dao.NewContentDao()
-	newContent, err := contentDao.GetContentByID(ctx, contentID, authorUID)
+	newContent, err := contentDao.GetContentByIDAndAuthorUID(ctx, contentID, authorUID)
 	if err != nil {
 		logger.Error(ctx, "SetContentPermission", logger.LogArgs{"err": err, "contentID": contentID, "authorUID": authorUID})
 		return err

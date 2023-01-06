@@ -57,7 +57,23 @@ func (c *contentController) DeleteContentByID(ctx *gin.Context) {
 
 // Feed 获得内容的feed流
 func (c *contentController) Feed(ctx *gin.Context) {
+	var param *dto.FeedReq
+	err := ctx.BindJSON(&param)
+	if err != nil {
+		logger.Error(ctx, "Feed", logger.LogArgs{"err": err})
+		c.EchoErrorStruct(ctx, common.ErrJSONUnmarshallFailed)
+		return
+	}
 
+	contentSvc := service.NewContentService()
+	feed, err := contentSvc.Feed(ctx, param.CityID, param.PageNum, param.PageSize)
+	if err != nil {
+		logger.Error(ctx, "Feed", logger.LogArgs{"err": err, "msg": "获得Feed数据失败"})
+		c.EchoErrorStruct(ctx, common.ErrGetFeedFailed)
+		return
+	}
+
+	c.EchoSuccess(ctx, feed)
 }
 
 // GetContentByID 根据ID获得内容的具体信息

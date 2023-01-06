@@ -39,29 +39,29 @@ func (d *contentDao) CreateContent(ctx context.Context, param *model.Content) er
 	return nil
 }
 
-// GetContentsByIDs 根据内容ID批量获得内容数据
-func (d *contentDao) GetContentsByIDs(ctx context.Context, IDs []int64, authorUID int64) ([]*model.Content, error) {
+// GetContentsByIDsAndAuthorID 根据内容ID和作者UID批量获得内容数据
+func (d *contentDao) GetContentsByIDsAndAuthorUID(ctx context.Context, IDs []int64, authorUID int64) ([]*model.Content, error) {
 	result := make([]*model.Content, 0)
 	err := d.GetDB().Table(d.getTableName(authorUID)).
 		Where("id in (?)", IDs).
 		Order("create_time desc").
 		Find(&result).Error
 	if err != nil {
-		logger.Error(ctx, "GetContentsByIDs", logger.LogArgs{"err": err, "msg": "获得内容数据失败"})
+		logger.Error(ctx, "GetContentsByIDsAndAuthorUID", logger.LogArgs{"err": err, "msg": "获得内容数据失败"})
 		return nil, err
 	}
 
 	return result, nil
 }
 
-// GetContentByID 根据内容ID获得内容数据
-func (d *contentDao) GetContentByID(ctx context.Context, ID, authorUID int64) (*model.Content, error) {
+// GetContentByIDAndAuthorID 根据内容ID和作者UID获得内容数据
+func (d *contentDao) GetContentByIDAndAuthorUID(ctx context.Context, ID, authorUID int64) (*model.Content, error) {
 	result := &model.Content{}
 	err := d.GetDB().Table(d.getTableName(authorUID)).
 		Where("id = ?", ID).
 		Find(&result).Error
 	if err != nil {
-		logger.Error(ctx, "GetContentByID", logger.LogArgs{"err": err, "msg": "获得内容数据失败"})
+		logger.Error(ctx, "GetContentByIDAndAuthorUID", logger.LogArgs{"err": err, "msg": "获得内容数据失败"})
 		return nil, err
 	}
 
