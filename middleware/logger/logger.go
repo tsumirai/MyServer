@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -141,49 +142,118 @@ func (l *LogModel) InitLogger() {
 	log.Info("Init Log Success")
 }
 
-// LoggerToFile 将日志输出到文件
+// CustomResponseWriter 封装 gin ResponseWriter 用于获取回包内容。
+type CustomResponseWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (w CustomResponseWriter) Write(b []byte) (int, error) {
+	w.body.Write(b)
+	return w.ResponseWriter.Write(b)
+}
+
+// 日志中间件。
 func (l *LogModel) LoggerToFile() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 使用自定义 ResponseWriter
+		crw := &CustomResponseWriter{
+			body:           bytes.NewBufferString(""),
+			ResponseWriter: c.Writer,
+		}
+		c.Writer = crw
+
+		// 打印请求信息
+		reqBody, _ := c.GetRawData()
+		// trace_id
+		traceID := c.Value("trace_id")
+		// 请求IP
+		clientIP := c.ClientIP()
+
+		log.WithFields(logrus.Fields{
+			"req_method": c.Request.Method,
+			"req_uri":    c.Request.RequestURI,
+			"req_body":   reqBody,
+			"trace_id":   traceID,
+			"client_ip":  clientIP,
+		}).Info()
+
+		//fmt.Printf("[INFO] Request: %s %s %s\n", c.Request.Method, c.Request.RequestURI, reqBody)
+		// 请求包体写回。
+		if len(reqBody) > 0 {
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
+		}
+
 		// 开始时间
 		startTime := time.Now()
-		// 处理请求
+
+		// 执行请求处理程序和其他中间件函数
 		c.Next()
+
+		respBody := string(crw.body.Bytes())
+		// 状态码
+		statusCode := c.Writer.Status()
 		// 结束时间
 		endTime := time.Now()
 		// 执行时间
 		latencyTime := endTime.Sub(startTime)
-		// 请求方式
-		reqMethod := c.Request.Method
-		// 请求路由
-		reqURI := c.Request.RequestURI
-		// 状态码
-		statusCode := c.Writer.Status()
-		// 请求IP
-		clientIP := c.ClientIP()
-		// trace_id
-		traceID := c.Value("trace_id")
-
-		//log.Hooks.Add(NewContextHook())
+		//fmt.Printf("[INFO] Response: %s %s %s (%v)\n", c.Request.Method, c.Request.RequestURI, respBody, latency)
 
 		log.WithFields(logrus.Fields{
 			"status_code":  statusCode,
 			"latency_time": latencyTime,
 			"client_ip":    clientIP,
-			"req_method":   reqMethod,
-			"req_uri":      reqURI,
+			"req_method":   c.Request.Method,
+			"req_uri":      c.Request.RequestURI,
+			"resp_body":    respBody,
 			"trace_id":     traceID,
 		}).Info()
-
-		//日志格式
-		//logger.Infof("| %3d | %l3v | %15s | %s | %s |",
-		//	statusCode,
-		//	latencyTime,
-		//	clientIP,
-		//	reqMethod,
-		//	reqURI,
-		//)
 	}
 }
+
+// // LoggerToFile 将日志输出到文件
+// func (l *LogModel) LoggerToFile() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		// 开始时间
+// 		startTime := time.Now()
+// 		// 处理请求
+// 		c.Next()
+// 		// 结束时间
+// 		endTime := time.Now()
+// 		// 执行时间
+// 		latencyTime := endTime.Sub(startTime)
+// 		// 请求方式
+// 		reqMethod := c.Request.Method
+// 		// 请求路由
+// 		reqURI := c.Request.RequestURI
+// 		// 状态码
+// 		statusCode := c.Writer.Status()
+// 		// 请求IP
+// 		clientIP := c.ClientIP()
+// 		// trace_id
+// 		traceID := c.Value("trace_id")
+
+// 		//log.Hooks.Add(NewContextHook())
+
+// 		log.WithFields(logrus.Fields{
+// 			"status_code":  statusCode,
+// 			"latency_time": latencyTime,
+// 			"client_ip":    clientIP,
+// 			"req_method":   reqMethod,
+// 			"req_uri":      reqURI,
+// 			"trace_id":     traceID,
+// 		}).Info()
+
+// 		//日志格式
+// 		//logger.Infof("| %3d | %l3v | %15s | %s | %s |",
+// 		//	statusCode,
+// 		//	latencyTime,
+// 		//	clientIP,
+// 		//	reqMethod,
+// 		//	reqURI,
+// 		//)
+// 	}
+// }
 
 type LogArgs map[string]interface{}
 
